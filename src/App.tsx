@@ -1,3 +1,5 @@
+import { useAppContext } from './hooks/useAppContext';
+
 function App() {
   return (
     <>

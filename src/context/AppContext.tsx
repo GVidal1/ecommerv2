@@ -53,21 +53,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     async function loadInitialData() {
       setIsLoading(true);
       try {
-        // 1. Cargar Productos
         const apiProducts = await getProductsFromApi();
         setProducts(apiProducts);
 
-        // 2. Cargar Usuarios
+        // Cargar Usuarios
         const storedUsers = localStorage.getItem('users');
         if (storedUsers) {
           setUsers(JSON.parse(storedUsers));
         } else {
-          // Si no hay nada, cargamos la lista base y la guardamos
           setUsers(usuariosBase);
           localStorage.setItem('users', JSON.stringify(usuariosBase));
         }
 
-        // 3. Cargar Usuario Actual
         const storedCurrentUser = localStorage.getItem('currentUser');
         if (storedCurrentUser) {
           setCurrentUser(JSON.parse(storedCurrentUser));
@@ -83,10 +80,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
 
     loadInitialData();
-  }, []); // El array vacío [] significa que solo se ejecuta al montar el componente
-
-  // --- Funciones "Helper" para persistir ---
-  // (Actualizan el estado Y el localStorage)
+  }, []);
 
   const persistProducts = (newProducts: Product[]) => {
     setProducts(newProducts);
@@ -98,15 +92,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('users', JSON.stringify(newUsers));
   };
 
-  // --- Acciones (Lógica de tu antiguo store.ts) ---
-
   // Acciones de Autenticación
   const loginUser = (email: string, password: string): boolean => {
     const userFound = users.find(
       (u) => u.email === email && u.password === password
     );
     if (userFound) {
-      setCurrentUser(userFound); // <-- Esto es REACTIVO
+      setCurrentUser(userFound);
       localStorage.setItem('currentUser', JSON.stringify(userFound));
       return true;
     }
@@ -114,7 +106,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logoutUser = () => {
-    setCurrentUser(null); // <-- Esto es REACTIVO
+    setCurrentUser(null);
     localStorage.removeItem('currentUser');
   };
 
@@ -166,8 +158,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return currentMax + 1;
   };
 
-  // --- 5. Exponer el Valor ---
-  // (Pasamos todos los estados y funciones al proveedor)
+  // VALORES EXPUESTOS PARA EL CONTEXTO (EN CASO DE NECESITAR OTRO CREAR Y AGREGAR AQUI)
   const value = {
     products,
     users,
