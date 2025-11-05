@@ -3,8 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 // Layout Principal
 import MainLayout from './layout/components/MainLayout';
 // Pages
-import { HomePage } from './features/home/HomePage';
 import NotFoundPage from './layout/components/404';
+import HomePage from './features/home/HomePage';
 
 function App() {
   return (

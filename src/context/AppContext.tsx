@@ -2,25 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { getProductsFromApi } from '../services/api';
 import usuariosBase from '../constants/listBaseUsers';
-
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  rating: number;
-  thumbnail: string;
-  description: string;
-  category: string;
-  images: string[];
-  discountPercentage: number;
-}
-
-export interface User {
-  email: string;
-  password: string;
-  nombre: string;
-  rol: 'admin' | 'user';
-}
+import type { Product, User, CartItem } from '../types/index';
 
 interface AppContextType {
   products: Product[];
@@ -28,6 +10,16 @@ interface AppContextType {
   currentUser: User | null;
   isLoading: boolean;
   error: string | null;
+
+  // Estado y Acciones del Carrito
+  cart: CartItem[];
+  addProductToCart: (product: Product) => void;
+  removeProductFromCart: (productId: number) => void;
+  updateCartQuantity: (productId: number, quantity: number) => void;
+  clearCart: () => void;
+  getCartTotal: () => number;
+  getTotalProductsInCart: () => number;
+
   // Acciones de Productos
   addProduct: (product: Product) => void;
   removeProductById: (productId: number) => void;
@@ -49,6 +41,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Estado cal Carrito
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  // Carga Inicial (Productos, Usuarios Y Carrito)
   useEffect(() => {
     async function loadInitialData() {
       setIsLoading(true);
@@ -56,18 +52,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const apiProducts = await getProductsFromApi();
         setProducts(apiProducts);
 
-        // Cargar Usuarios
         const storedUsers = localStorage.getItem('users');
-        if (storedUsers) {
-          setUsers(JSON.parse(storedUsers));
-        } else {
-          setUsers(usuariosBase);
+        setUsers(storedUsers ? JSON.parse(storedUsers) : usuariosBase);
+        if (!storedUsers) {
           localStorage.setItem('users', JSON.stringify(usuariosBase));
         }
 
         const storedCurrentUser = localStorage.getItem('currentUser');
         if (storedCurrentUser) {
           setCurrentUser(JSON.parse(storedCurrentUser));
+        }
+
+        // Cargar carrito de localStorage
+        const storedCart = localStorage.getItem('cart');
+        if (storedCart) {
+          setCart(JSON.parse(storedCart));
         }
 
         setError(null);
@@ -82,6 +81,68 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     loadInitialData();
   }, []);
 
+  // (Se ejecuta CADA VEZ que el 'cart' cambia)
+  useEffect(() => {
+    if (!isLoading) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+  }, [cart, isLoading]);
+
+  // Funciones del Carrito
+
+  const addProductToCart = (product: Product) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
+  };
+
+  const removeProductFromCart = (productId: number) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  };
+
+  const updateCartQuantity = (productId: number, quantity: number) => {
+    if (quantity <= 0) {
+      removeProductFromCart(productId);
+    } else {
+      setCart((prevCart) =>
+        prevCart.map((item) =>
+          item.id === productId ? { ...item, quantity: quantity } : item
+        )
+      );
+    }
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  const getCartTotal = (): number => {
+    return (
+      Math.round(
+        cart.reduce(
+          (acc, item) =>
+            acc +
+            (item.price * item.quantity -
+              (item.price * item.discountPercentage) / 100),
+          0
+        ) * 100
+      ) / 100
+    );
+  };
+
+  const getTotalProductsInCart = (): number => {
+    return cart.reduce((acc, item) => acc + item.quantity, 0);
+  };
+
+  // --- (Funciones de persistencia de productos y usuarios) ---
   const persistProducts = (newProducts: Product[]) => {
     setProducts(newProducts);
     localStorage.setItem('products', JSON.stringify(newProducts));
@@ -158,13 +219,24 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return currentMax + 1;
   };
 
-  // VALORES EXPUESTOS PARA EL CONTEXTO (EN CASO DE NECESITAR OTRO CREAR Y AGREGAR AQUI)
   const value = {
+    // Valores Globales
     products,
     users,
     currentUser,
     isLoading,
     error,
+
+    // Carrito y sus funciones
+    cart,
+    addProductToCart,
+    removeProductFromCart,
+    updateCartQuantity,
+    clearCart,
+    getCartTotal,
+    getTotalProductsInCart,
+
+    // (Otras funciones de persistencia en localStorage)
     addProduct,
     removeProductById,
     updateProductById,
