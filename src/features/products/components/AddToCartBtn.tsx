@@ -1,5 +1,6 @@
 import { useAppContext } from '../../../hooks/useAppContext';
 import type { Product } from '../../../types';
+import './AddToCardBtnStyles.css';
 
 interface AddToCartBtnProps {
   product: Product;
