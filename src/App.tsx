@@ -1,71 +1,30 @@
-import { useState } from "react";
-import { useAppContext } from "./hooks/useAppContext";
-import { Login } from "./features/auth";
-import { Blogs } from "./features/blogs";
-import { Footer } from "./features/layout";
+import { Routes, Route } from 'react-router-dom';
 
-type Page = "login" | "blogs" | "home";
+// Layout Principal
+import MainLayout from './layout/components/MainLayout';
+// Pages
+import { HomePage } from './features/home/HomePage';
+import NotFoundPage from './layout/components/404';
 
 function App() {
-  const { currentUser, isLoading, error } = useAppContext();
-  const [currentPage, setCurrentPage] = useState<Page>("login");
-
-  if (isLoading) {
-    return (
-      <div style={{ textAlign: "center", padding: "3rem" }}>
-        <h2>Cargando...</h2>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ textAlign: "center", padding: "3rem", color: "red" }}>
-        <h2>Error: {error}</h2>
-      </div>
-    );
-  }
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case "login":
-        return <Login />;
-      case "blogs":
-        return <Blogs />;
-      case "home":
-        return (
-          <div style={{ padding: "3rem", textAlign: "center" }}>
-            <h1>Bienvenido a StylePoint</h1>
-            {currentUser && <p>Usuario: {currentUser.nombre}</p>}
-          </div>
-        );
-      default:
-        return <Login />;
-    }
-  };
-
   return (
-    <>
-      {/* Simple Navigation */}
-      <nav
-        style={{
-          padding: "1rem 2rem",
-          borderBottom: "1px solid #e5e7eb",
-          display: "flex",
-          gap: "1rem",
-        }}
-      >
-        <button onClick={() => setCurrentPage("login")}>Login</button>
-        <button onClick={() => setCurrentPage("home")}>Home</button>
-        <button onClick={() => setCurrentPage("blogs")}>Blogs</button>
-      </nav>
+    <Routes>
+      {/* Layout Principal donde se renderiza el header - navbar y footer */}
+      <Route path="/" element={<MainLayout />}>
+        {/* La ruta "index" es la que se muestra por defecto en "/" */}
+        <Route index element={<HomePage />} />
 
-      {/* Page Content */}
-      <main style={{ flex: 1 }}>{renderPage()}</main>
+        {/* Rutas de la app */}
+        {/* <Route path="products" element={<ProductsPage />} />
+        <Route path="products/:id" element={<ProductDetailPage />} /> {/* Ruta dinámica */}
+        {/* <Route path="about" element={<AboutPage />} />
+        <Route path="blog" element={<BlogPage />} />
+        <Route path="contact" element={<ContactPage />} />  */}
 
-      {/* Footer */}
-      <Footer />
-    </>
+        {/* Ruta  para 404 Not Found */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }
 

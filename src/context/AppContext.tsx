@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import type { ReactNode } from "react";
-import { getProductsFromApi } from "../services/api";
-import usuariosBase from "../constants/listBaseUsers";
+import { createContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import { getProductsFromApi } from '../services/api';
+import usuariosBase from '../constants/listBaseUsers';
 
 export interface Product {
   id: number;
@@ -19,7 +19,7 @@ export interface User {
   email: string;
   password: string;
   nombre: string;
-  rol: "admin" | "user";
+  rol: 'admin' | 'user';
 }
 
 interface AppContextType {
@@ -44,7 +44,7 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [users, setUsers] = useState<User[]>(usuariosBase);
+  const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,10 +55,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       try {
         const apiProducts = await getProductsFromApi();
         setProducts(apiProducts);
+
+        // Cargar Usuarios
+        const storedUsers = localStorage.getItem('users');
+        if (storedUsers) {
+          setUsers(JSON.parse(storedUsers));
+        } else {
+          setUsers(usuariosBase);
+          localStorage.setItem('users', JSON.stringify(usuariosBase));
+        }
+
+        const storedCurrentUser = localStorage.getItem('currentUser');
+        if (storedCurrentUser) {
+          setCurrentUser(JSON.parse(storedCurrentUser));
+        }
+
         setError(null);
       } catch (err) {
         console.error(err);
-        setError("No se pudieron cargar los datos iniciales.");
+        setError('No se pudieron cargar los datos iniciales.');
       } finally {
         setIsLoading(false);
       }
@@ -67,6 +82,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     loadInitialData();
   }, []);
 
+  const persistProducts = (newProducts: Product[]) => {
+    setProducts(newProducts);
+    localStorage.setItem('products', JSON.stringify(newProducts));
+  };
+
+  const persistUsers = (newUsers: User[]) => {
+    setUsers(newUsers);
+    localStorage.setItem('users', JSON.stringify(newUsers));
+  };
+
   // Acciones de Autenticación
   const loginUser = (email: string, password: string): boolean => {
     const userFound = users.find(
@@ -74,6 +99,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     );
     if (userFound) {
       setCurrentUser(userFound);
+      localStorage.setItem('currentUser', JSON.stringify(userFound));
       return true;
     }
     return false;
@@ -81,42 +107,50 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const logoutUser = () => {
     setCurrentUser(null);
+    localStorage.removeItem('currentUser');
   };
 
   // Acciones de Admin de Usuarios
   const addUser = (user: User): boolean => {
     if (users.find((u) => u.email === user.email)) {
-      console.error("El email ya está registrado");
+      console.error('El email ya está registrado');
       return false;
     }
-    setUsers([...users, user]);
+    persistUsers([...users, user]);
     return true;
   };
 
   const removeUserByEmail = (email: string) => {
-    setUsers(users.filter((u) => u.email !== email));
+    persistUsers(users.filter((u) => u.email !== email));
   };
 
   // Acciones de Productos
   const addProduct = (product: Product) => {
-    setProducts([product, ...products]);
+    persistProducts([product, ...products]);
   };
 
   const removeProductById = (productId: number) => {
-    setProducts(products.filter((p) => p.id !== productId));
+    persistProducts(products.filter((p) => p.id !== productId));
   };
 
   const updateProductById = (productId: number, updates: Partial<Product>) => {
-    setProducts(
-      products.map((product) =>
-        product.id === productId ? { ...product, ...updates } : product
-      )
-    );
+    let updated = false;
+    const newProducts = products.map((product) => {
+      if (product.id === productId) {
+        updated = true;
+        return { ...product, ...updates };
+      }
+      return product;
+    });
+
+    if (updated) {
+      persistProducts(newProducts);
+    }
   };
 
   const generateNewProductId = (): number => {
     const currentMax = products.reduce((maxId, product) => {
-      if (typeof product.id === "number" && product.id >= 200) {
+      if (typeof product.id === 'number' && product.id >= 200) {
         return Math.max(maxId, product.id);
       }
       return maxId;
@@ -124,6 +158,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return currentMax + 1;
   };
 
+  // VALORES EXPUESTOS PARA EL CONTEXTO (EN CASO DE NECESITAR OTRO CREAR Y AGREGAR AQUI)
   const value = {
     products,
     users,
