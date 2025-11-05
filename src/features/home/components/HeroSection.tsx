@@ -4,7 +4,7 @@ export const HeroSection = () => {
   return (
     <section className="border-home">
       <img
-        src="../../../assets/HEROIMAGE.png"
+        src="/assets/HEROIMAGE.png"
         alt="StylePoint - Encuentra tu estilo único"
         className="picture-home"
       />

@@ -75,7 +75,7 @@ const Buttons = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// --- 3. Componente Principal (Root) ---
+//Componente Principal
 
 interface ProductCardProps {
   product: Product;
@@ -85,13 +85,13 @@ interface ProductCardProps {
 export const ProductCard = ({ product, children }: ProductCardProps) => {
   const navigate = useNavigate();
 
-  // El click en la tarjeta navega al detalle
+  // El click parar navegar al detalle
   const handleCardClick = () => {
     navigate(`/products/${product.id}`);
   };
 
   return (
-    // Proveemos el 'product' al contexto
+    // Proveemos el PRODUCT al contexto
     <ProductContext.Provider value={{ product }}>
       <div className="card" onClick={handleCardClick}>
         <div className="card-flex-container">{children}</div>
@@ -100,7 +100,7 @@ export const ProductCard = ({ product, children }: ProductCardProps) => {
   );
 };
 
-//Adjuntar sub-componentes ---
+//Adjuntar sub-componentes
 ProductCard.Image = Image;
 ProductCard.Info = Info;
 ProductCard.Title = Title;

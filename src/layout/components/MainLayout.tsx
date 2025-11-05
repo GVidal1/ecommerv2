@@ -1,13 +1,13 @@
 import { Outlet } from 'react-router-dom';
 import { Footer } from './Footer';
-import Navbar from './Navbar';
+import Header from './Header';
 
 const MainLayout = () => {
   return (
     <div>
-      <Navbar />
+      <Header />
 
-      <main style={{ padding: '2rem' }}>
+      <main>
         <Outlet />
       </main>
 

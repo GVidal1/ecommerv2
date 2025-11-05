@@ -1,6 +1,10 @@
 import { NavLink } from 'react-router-dom';
 
-const Navbar = () => {
+interface NavbarProps {
+  className?: string;
+}
+
+const Navbar = ({ className = '' }: NavbarProps) => {
   const getNavLinkStyle = ({ isActive }: { isActive: boolean }) => ({
     fontWeight: isActive ? 'bold' : 'normal',
     color: isActive ? 'dodgerblue' : 'black',
@@ -9,26 +13,21 @@ const Navbar = () => {
   });
 
   return (
-    <nav
-      style={{
-        padding: '1rem',
-        backgroundColor: '#eee',
-        borderBottom: '1px solid #ccc',
-      }}>
+    <nav className={`navbar ${className}`}>
       <NavLink to="/" style={getNavLinkStyle}>
         Home
       </NavLink>
       <NavLink to="/products" style={getNavLinkStyle}>
-        Products
+        Productos
       </NavLink>
       <NavLink to="/about" style={getNavLinkStyle}>
-        About
+        Nosotros
       </NavLink>
       <NavLink to="/blog" style={getNavLinkStyle}>
-        Blog
+        Blogs
       </NavLink>
       <NavLink to="/contact" style={getNavLinkStyle}>
-        Contact
+        Contacto
       </NavLink>
     </nav>
   );
