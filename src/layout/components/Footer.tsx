@@ -1,11 +1,11 @@
-import "../styles/Footer.css";
+import '../styles/Footer.css';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="footer">
-      <div className="footer-container">
+      <div className="footer-container container">
         {/* Brand Section */}
         <div className="footer-brand">
           <h2>STYLEPOINT</h2>
@@ -75,8 +75,7 @@ export function Footer() {
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Facebook"
-            >
+              aria-label="Facebook">
               <img
                 src="https://cdn-icons-png.flaticon.com/512/733/733547.png"
                 alt="Facebook"
@@ -87,8 +86,7 @@ export function Footer() {
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Instagram"
-            >
+              aria-label="Instagram">
               <img
                 src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png"
                 alt="Instagram"
@@ -99,8 +97,7 @@ export function Footer() {
               href="https://twitter.com"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Twitter"
-            >
+              aria-label="Twitter">
               <img
                 src="https://cdn-icons-png.flaticon.com/512/733/733579.png"
                 alt="Twitter"
@@ -111,8 +108,7 @@ export function Footer() {
               href="https://linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="LinkedIn"
-            >
+              aria-label="LinkedIn">
               <img
                 src="https://cdn-icons-png.flaticon.com/512/174/174857.png"
                 alt="LinkedIn"

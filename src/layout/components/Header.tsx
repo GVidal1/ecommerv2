@@ -1,46 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
+import { CartIcon } from '../../features/cart/components/CartIcon';
 // Iconos
-import { Menu, X, User, ShoppingCart } from 'lucide-react';
+import { Menu, X, User } from 'lucide-react';
 
-//Context
-import { useAppContext } from '../../hooks/useAppContext';
-
-// --- Componentes Placeholder (para el perfil y carrito) ---
-// Deberías reemplazarlos con tus componentes reales cuando los crees.
+//Componentes temporales de prueba
 const ProfileMenu = () => {
   return (
     <div style={{ padding: '0 10px', cursor: 'pointer' }}>
-      {/* 2. Ícono de Usuario */}
+      {/* icono de Usuario */}
       <User size={24} />
-    </div>
-  );
-};
-
-const CartIcon = () => {
-  const { getTotalProductsInCart } = useAppContext(); // Ejemplo de uso
-  const totalItems = getTotalProductsInCart();
-
-  return (
-    <div style={{ padding: '0 10px', cursor: 'pointer', position: 'relative' }}>
-      {/* 3. Ícono de Carrito */}
-      <ShoppingCart size={24} />
-      {totalItems > 0 && (
-        <span
-          style={{
-            position: 'absolute',
-            top: -5,
-            right: 0,
-            background: 'red',
-            color: 'white',
-            borderRadius: '50%',
-            padding: '2px 5px',
-            fontSize: '10px',
-          }}>
-          {totalItems}
-        </span>
-      )}
     </div>
   );
 };
@@ -57,7 +27,7 @@ export const Header = () => {
     <header className="header">
       <div className="container">
         <div className="flex-container">
-          {/* LOGO (usa Link de React Router) */}
+          {/* LOGO */}
           <Link to="/">
             <img
               height="48px"
