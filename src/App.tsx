@@ -11,10 +11,22 @@ import CartPage from "./features/cart/CartPage";
 import { AboutPage } from "./features/about/AboutPage";
 import { BlogPage } from "./features/blogs/BlogPage";
 import { ContactPage } from "./features/contact/ContactPage";
+//AUTH
+import { AdminPage } from "./features/auth/AdminPage";
+import { ProtectedRoute } from "./features/auth/components/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
+      {/* Ruta protegida del Admin (sin Layout principal) */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute requireAdmin={true}>
+            <AdminPage />
+          </ProtectedRoute>
+        }
+      />
       {/* Layout Principal donde se renderiza el header - navbar y footer */}
       <Route path="/" element={<MainLayout />}>
         {/* La ruta "index" es la que se muestra por defecto en "/" */}

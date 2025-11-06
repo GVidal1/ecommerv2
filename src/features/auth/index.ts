@@ -1,4 +1,4 @@
-// src/features/auth/index.ts
-export { Login } from "./pages/LoginPage";
-export { RegisterPage } from "./pages/RegisterPage";
-// Si tienes otros archivos, como hooks o tipos, agrégalos aquí
+export { ProfileMenu } from "./components/ProfileMenu";
+export { LoginPage } from "./components/LoginPage";
+export { RegisterPage } from "./components/RegisterPage";
+export { ProtectedRoute } from "./components/ProtectedRoute";

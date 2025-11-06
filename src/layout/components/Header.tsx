@@ -1,19 +1,10 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { CartIcon } from '../../features/cart/components/CartIcon';
-import { Navbar } from './Navbar';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { CartIcon } from "../../features/cart/components/CartIcon";
+import { ProfileMenu } from "../../features/auth/components/ProfileMenu";
+import { Navbar } from "./Navbar";
 // Iconos
-import { Menu, X, User } from 'lucide-react';
-
-//Componentes temporales de prueba
-const ProfileMenu = () => {
-  return (
-    <div style={{ padding: '0 10px', cursor: 'pointer' }}>
-      {/* icono de Usuario */}
-      <User size={24} />
-    </div>
-  );
-};
+import { Menu, X } from "lucide-react";
 
 export const Header = () => {
   // Logica  para manejar el menú en mbile
@@ -56,7 +47,8 @@ export const Header = () => {
             <button
               id="mobile-menu-btn"
               className="mobile-menu-btn"
-              onClick={toggleMobileMenu}>
+              onClick={toggleMobileMenu}
+            >
               {/*Íconos de Menú/Cerrar */}
               {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
