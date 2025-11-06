@@ -1,3 +1,5 @@
+import { StoreIcon } from 'lucide-react';
+
 // About Content
 export function AboutContent() {
   return (
@@ -21,7 +23,7 @@ export function AboutContent() {
         </div>
         <div className="about-image">
           <div className="image-placeholder">
-            <span className="material-symbols-outlined">storefront</span>
+            <StoreIcon />
             <p>Nuestra tienda</p>
           </div>
         </div>

@@ -1,8 +1,10 @@
+import { User2, Link } from 'lucide-react';
+
 // Team Section
 export function TeamSection() {
   const team = [
-    { name: "Gabriel Vidal", role: "Fundador & CEO" },
-    { name: "Raúl Fernández", role: "Co-Fundador & CTO" },
+    { name: 'Gabriel Vidal', role: 'Fundador & CEO' },
+    { name: 'Raúl Fernández', role: 'Co-Fundador & CTO' },
   ];
 
   return (
@@ -14,13 +16,13 @@ export function TeamSection() {
           {team.map((member, index) => (
             <div key={index} className="team-card">
               <div className="team-avatar">
-                <span className="material-symbols-outlined">person</span>
+                <User2 />
               </div>
               <h4>{member.name}</h4>
               <p>{member.role}</p>
               <div className="team-social">
                 <a href="#" className="social-link">
-                  <span className="material-symbols-outlined">link</span>
+                  <Link />
                 </a>
               </div>
             </div>

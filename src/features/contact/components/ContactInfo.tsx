@@ -1,8 +1,18 @@
+import type { ElementType, ReactNode } from 'react';
+import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+
+interface ContactCard {
+  icon: ElementType;
+  title: string;
+  content: ReactNode;
+  className?: string;
+}
+
 export function ContactInfo() {
-  const contactCards = [
+  const contactCards: ContactCard[] = [
     {
-      icon: "location_on",
-      title: "Ubicación",
+      icon: MapPin,
+      title: 'Ubicación',
       content: (
         <>
           Av. Principal 123
@@ -12,8 +22,8 @@ export function ContactInfo() {
       ),
     },
     {
-      icon: "phone",
-      title: "Teléfono",
+      icon: Phone,
+      title: 'Teléfono',
       content: (
         <>
           +56 9 1234 5678 <br />
@@ -22,8 +32,8 @@ export function ContactInfo() {
       ),
     },
     {
-      icon: "email",
-      title: "Email",
+      icon: Mail,
+      title: 'Email',
       content: (
         <>
           info@stylepoint.com
@@ -31,11 +41,11 @@ export function ContactInfo() {
           soporte@stylepoint.com
         </>
       ),
-      className: "email-contact",
+      className: 'email-contact',
     },
     {
-      icon: "schedule",
-      title: "Horarios",
+      icon: Clock,
+      title: 'Horarios',
       content: (
         <>
           Lunes - Viernes: 9:00 - 18:00
@@ -48,15 +58,18 @@ export function ContactInfo() {
 
   return (
     <div className="contact-info">
-      {contactCards.map((card, index) => (
-        <div key={index} className="contact-card">
-          <div className="contact-icon">
-            <span className="material-symbols-outlined">{card.icon}</span>
+      {contactCards.map((card, index) => {
+        const IconComponent = card.icon;
+        return (
+          <div key={index} className="contact-card">
+            <div className="contact-icon">
+              <IconComponent size={32} />
+            </div>
+            <h3>{card.title}</h3>
+            <p className={card.className}>{card.content}</p>
           </div>
-          <h3>{card.title}</h3>
-          <p className={card.className}>{card.content}</p>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
