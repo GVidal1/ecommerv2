@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/atoms/Button/Button";
-import "./404.css";
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../../components/atoms/Button/Button';
+import '../styles/404.css';
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ export default function NotFoundPage() {
           Lo sentimos, la página que buscas no existe o ha sido movida.
         </p>
         <div className="not-found-actions">
-          <Button onClick={() => navigate("/")}>Ir al inicio</Button>
+          <Button onClick={() => navigate('/')}>Ir al inicio</Button>
           <Button variant="secondary" onClick={() => navigate(-1)}>
             Volver atrás
           </Button>

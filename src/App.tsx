@@ -1,10 +1,11 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from 'react-router-dom';
 
 // Layout Principal
-import MainLayout from "./layout/components/MainLayout";
+import MainLayout from './layout/components/MainLayout';
 // Pages
-import HomePage from "./features/home/HomePage";
-import NotFoundPage from "./layout/components/404";
+import HomePage from './features/home/HomePage';
+import NotFoundPage from './layout/components/404';
+import ProductsPage from './features/products/ProductPage';
 
 function App() {
   return (
@@ -15,11 +16,12 @@ function App() {
         <Route index element={<HomePage />} />
 
         {/* Rutas de la app */}
-        {/* <Route path="products" element={<ProductsPage />} />
-        <Route path="products/:id" element={<ProductDetailPage />} /> {/* Ruta dinámica */}
-        {/* <Route path="about" element={<AboutPage />} />
-        <Route path="blog" element={<BlogPage />} />
-        <Route path="contact" element={<ContactPage />} />  */}
+        <Route path="products" element={<ProductsPage />} />
+        {/* <Route path="products/:id" element={<ProductDetailPage />} /> */}
+
+        {/* <Route path="about" element={<AboutPage />} /> */}
+        {/* <Route path="blog" element={<BlogPage />} /> */}
+        {/* <Route path="contact" element={<ContactPage />} /> */}
 
         {/* Ruta  para 404 Not Found */}
         <Route path="*" element={<NotFoundPage />} />
