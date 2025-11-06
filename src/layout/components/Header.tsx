@@ -46,8 +46,9 @@ export const Header = () => {
             {/*Íconos de Menú/Cerrar */}
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
-
+          {/* BARRA DE NAVEGACION CON LAS PAGES DE LA APP */}
           <Navbar />
+
           {/* MENU DE OPCIONES USUARIO Y CARRITO */}
           <div className="menu-opciones">
             <ProfileMenu />
