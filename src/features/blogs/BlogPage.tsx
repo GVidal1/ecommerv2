@@ -1,9 +1,9 @@
-import { blogPosts } from "../../../constants/blogsconstant";
+import { blogPosts } from "../../constants/blogsconstant";
 import { useState, type MouseEvent } from "react";
 type Category = "all" | "moda" | "hombres" | "relojes";
-import "../styles/Blogs.css";
+import "./styles/BlogPage.css";
 
-export function Blogs() {
+export function BlogPage() {
   const [activeFilter, setActiveFilter] = useState<Category>("all");
 
   const handleFilterClick = (e: MouseEvent<HTMLElement>) => {
