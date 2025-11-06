@@ -23,12 +23,16 @@ export const Header = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header className="header">
       <div className="container">
         <div className="flex-container">
           {/* LOGO */}
-          <Link to="/">
+          <Link to="/" onClick={closeMobileMenu}>
             <img
               height="48px"
               width="48px"
@@ -38,21 +42,24 @@ export const Header = () => {
             />
           </Link>
 
-          {/* BOTÓN DE MENÚ MÓVIL */}
-          <button
-            id="mobile-menu-btn"
-            className="mobile-menu-btn"
-            onClick={toggleMobileMenu}>
-            {/*Íconos de Menú/Cerrar */}
-            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
           {/* BARRA DE NAVEGACION CON LAS PAGES DE LA APP */}
-          <Navbar />
+          <Navbar
+            isMobileMenuOpen={isMobileMenuOpen}
+            closeMobileMenu={closeMobileMenu}
+          />
 
           {/* MENU DE OPCIONES USUARIO Y CARRITO */}
           <div className="menu-opciones">
             <ProfileMenu />
             <CartIcon />
+            {/* BOTÓN DE MENÚ MÓVIL */}
+            <button
+              id="mobile-menu-btn"
+              className="mobile-menu-btn"
+              onClick={toggleMobileMenu}>
+              {/*Íconos de Menú/Cerrar */}
+              {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
           </div>
         </div>
       </div>

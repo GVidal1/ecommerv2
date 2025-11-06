@@ -1,74 +1,33 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import '../styles/Navbar.css';
+import { NavLink } from 'react-router-dom';
 
-export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
+interface NavbarProps {
+  isMobileMenuOpen: boolean;
+  closeMobileMenu: () => void;
+}
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const isActive = (path: string) => {
-    return location.pathname === path ? 'active' : '';
-  };
+export const Navbar = ({ isMobileMenuOpen, closeMobileMenu }: NavbarProps) => {
+  const getNavLinkStyle = ({ isActive }: { isActive: boolean }) => ({
+    fontWeight: isActive ? 'bold' : 'normal',
+    color: isActive ? 'var(--color-primario)' : undefined,
+  });
 
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        <button
-          className={`navbar-toggle ${isMenuOpen ? 'active' : ''}`}
-          onClick={toggleMenu}
-          aria-label="Toggle menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-        <ul className={`navbar-menu ${isMenuOpen ? 'active' : ''}`}>
-          <li>
-            <Link
-              to="/"
-              className={isActive('/')}
-              onClick={() => setIsMenuOpen(false)}>
-              Inicio
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/products"
-              className={isActive('/products')}
-              onClick={() => setIsMenuOpen(false)}>
-              Productos
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/blog"
-              className={isActive('/blog')}
-              onClick={() => setIsMenuOpen(false)}>
-              Blog
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/about"
-              className={isActive('/about')}
-              onClick={() => setIsMenuOpen(false)}>
-              Nosotros
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/contact"
-              className={isActive('/contact')}
-              onClick={() => setIsMenuOpen(false)}>
-              Contacto
-            </Link>
-          </li>
-        </ul>
-      </div>
+    <nav className={`navbar ${isMobileMenuOpen ? 'show' : ''}`}>
+      <NavLink to="/" style={getNavLinkStyle} onClick={closeMobileMenu}>
+        Home
+      </NavLink>
+      <NavLink to="/products" style={getNavLinkStyle} onClick={closeMobileMenu}>
+        Products
+      </NavLink>
+      <NavLink to="/about" style={getNavLinkStyle} onClick={closeMobileMenu}>
+        About
+      </NavLink>
+      <NavLink to="/blog" style={getNavLinkStyle} onClick={closeMobileMenu}>
+        Blog
+      </NavLink>
+      <NavLink to="/contact" style={getNavLinkStyle} onClick={closeMobileMenu}>
+        Contact
+      </NavLink>
     </nav>
   );
-}
+};
