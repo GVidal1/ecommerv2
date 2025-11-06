@@ -1,31 +1,14 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { getProductsFromApi } from "../services/api";
 import usuariosBase from "../constants/listBaseUsers";
-
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  rating: number;
-  thumbnail: string;
-  description: string;
-  category: string;
-  images: string[];
-  discountPercentage: number;
-}
-
-export interface User {
-  email: string;
-  password: string;
-  nombre: string;
-  rol: "admin" | "user";
-}
+import type { Product, User, CartItem } from "../types";
 
 interface AppContextType {
   products: Product[];
   users: User[];
   currentUser: User | null;
+  cart: CartItem[];
   isLoading: boolean;
   error: string | null;
   // Acciones de Productos
@@ -38,14 +21,23 @@ interface AppContextType {
   logoutUser: () => void;
   addUser: (user: User) => boolean;
   removeUserByEmail: (email: string) => void;
+  // Acciones del Carrito
+  addProductToCart: (product: Product) => void;
+  removeProductFromCart: (productId: number) => void;
+  updateCartQuantity: (productId: number, quantity: number) => void;
+  clearCart: () => void;
+  getTotalProductsInCart: () => number;
+  getCartTotal: () => number;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,6 +62,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           setCurrentUser(JSON.parse(storedCurrentUser));
         }
 
+        // Cargar Carrito
+        const storedCart = localStorage.getItem("cart");
+        if (storedCart) {
+          setCart(JSON.parse(storedCart));
+        }
+
         setError(null);
       } catch (err) {
         console.error(err);
@@ -92,7 +90,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("users", JSON.stringify(newUsers));
   };
 
-  // Acciones de Autenticación
+  const persistCart = (newCart: CartItem[]) => {
+    setCart(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
+  };
+
+  // ========== AUTENTICACIÓN ==========
   const loginUser = (email: string, password: string): boolean => {
     const userFound = users.find(
       (u) => u.email === email && u.password === password
@@ -110,7 +113,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("currentUser");
   };
 
-  // Acciones de Admin de Usuarios
+  // ========== USUARIOS ==========
   const addUser = (user: User): boolean => {
     if (users.find((u) => u.email === user.email)) {
       console.error("El email ya está registrado");
@@ -124,7 +127,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     persistUsers(users.filter((u) => u.email !== email));
   };
 
-  // Acciones de Productos
+  // ========== PRODUCTOS ==========
   const addProduct = (product: Product) => {
     persistProducts([product, ...products]);
   };
@@ -158,11 +161,54 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return currentMax + 1;
   };
 
-  // VALORES EXPUESTOS PARA EL CONTEXTO (EN CASO DE NECESITAR OTRO CREAR Y AGREGAR AQUI)
+  // ========== CARRITO ==========
+  const addProductToCart = (product: Product) => {
+    const existingItem = cart.find((item) => item.id === product.id);
+
+    if (existingItem) {
+      updateCartQuantity(product.id, existingItem.quantity + 1);
+    } else {
+      persistCart([...cart, { ...product, quantity: 1 }]);
+    }
+  };
+
+  const removeProductFromCart = (productId: number) => {
+    persistCart(cart.filter((item) => item.id !== productId));
+  };
+
+  const updateCartQuantity = (productId: number, quantity: number) => {
+    if (quantity <= 0) {
+      removeProductFromCart(productId);
+      return;
+    }
+
+    const updatedCart = cart.map((item) =>
+      item.id === productId ? { ...item, quantity } : item
+    );
+    persistCart(updatedCart);
+  };
+
+  const clearCart = () => {
+    persistCart([]);
+  };
+
+  const getTotalProductsInCart = (): number => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const getCartTotal = (): number => {
+    return cart.reduce((total, item) => {
+      const itemTotal = item.price * item.quantity;
+      const discount = (itemTotal * item.discountPercentage) / 100;
+      return total + (itemTotal - discount);
+    }, 0);
+  };
+
   const value = {
     products,
     users,
     currentUser,
+    cart,
     isLoading,
     error,
     addProduct,
@@ -173,6 +219,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     logoutUser,
     addUser,
     removeUserByEmail,
+    addProductToCart,
+    removeProductFromCart,
+    updateCartQuantity,
+    clearCart,
+    getTotalProductsInCart,
+    getCartTotal,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
