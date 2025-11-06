@@ -1,23 +1,23 @@
-import { blogPosts } from "../../constants/blogsconstant";
-import { useState, type MouseEvent } from "react";
-type Category = "all" | "moda" | "hombres" | "relojes";
-import "./styles/BlogPage.css";
+import { blogPosts } from '../../constants/blogsconstant';
+import { useState, type MouseEvent } from 'react';
+type Category = 'all' | 'moda' | 'hombres' | 'relojes';
+import './styles/Blogs.css';
 
 export function BlogPage() {
-  const [activeFilter, setActiveFilter] = useState<Category>("all");
+  const [activeFilter, setActiveFilter] = useState<Category>('all');
 
   const handleFilterClick = (e: MouseEvent<HTMLElement>) => {
     const target = e.target as HTMLElement;
-    const button = target.closest("button.chip");
+    const button = target.closest('button.chip');
 
     if (!button) return;
 
-    const filter = button.getAttribute("data-filter") as Category;
+    const filter = button.getAttribute('data-filter') as Category;
     setActiveFilter(filter);
   };
 
   const filteredPosts =
-    activeFilter === "all"
+    activeFilter === 'all'
       ? blogPosts
       : blogPosts.filter((post) => post.category === activeFilter);
 
@@ -40,38 +40,33 @@ export function BlogPage() {
         <nav
           className="blogs-filters"
           aria-label="Filtros de categoría"
-          onClick={handleFilterClick}
-        >
+          onClick={handleFilterClick}>
           <button
-            className={`chip ${activeFilter === "all" ? "is-active" : ""}`}
+            className={`chip ${activeFilter === 'all' ? 'is-active' : ''}`}
             type="button"
-            aria-pressed={activeFilter === "all"}
-            data-filter="all"
-          >
+            aria-pressed={activeFilter === 'all'}
+            data-filter="all">
             Todo
           </button>
           <button
-            className={`chip ${activeFilter === "moda" ? "is-active" : ""}`}
+            className={`chip ${activeFilter === 'moda' ? 'is-active' : ''}`}
             type="button"
-            aria-pressed={activeFilter === "moda"}
-            data-filter="moda"
-          >
+            aria-pressed={activeFilter === 'moda'}
+            data-filter="moda">
             Moda
           </button>
           <button
-            className={`chip ${activeFilter === "hombres" ? "is-active" : ""}`}
+            className={`chip ${activeFilter === 'hombres' ? 'is-active' : ''}`}
             type="button"
-            aria-pressed={activeFilter === "hombres"}
-            data-filter="hombres"
-          >
+            aria-pressed={activeFilter === 'hombres'}
+            data-filter="hombres">
             Hombres
           </button>
           <button
-            className={`chip ${activeFilter === "relojes" ? "is-active" : ""}`}
+            className={`chip ${activeFilter === 'relojes' ? 'is-active' : ''}`}
             type="button"
-            aria-pressed={activeFilter === "relojes"}
-            data-filter="relojes"
-          >
+            aria-pressed={activeFilter === 'relojes'}
+            data-filter="relojes">
             Relojes
           </button>
         </nav>
@@ -82,8 +77,7 @@ export function BlogPage() {
             <article
               key={post.id}
               className="blog-card"
-              data-category={post.category}
-            >
+              data-category={post.category}>
               <div className="blog-media">
                 <img
                   src={post.image}
@@ -100,8 +94,7 @@ export function BlogPage() {
                   className="add-btn blog-action"
                   href={post.link}
                   target="_blank"
-                  rel="noopener noreferrer"
-                >
+                  rel="noopener noreferrer">
                   Ver más
                 </a>
               </div>

@@ -1,10 +1,10 @@
-import { AboutHero } from "./components/AboutHero";
-import { AboutContent } from "./components/AboutContent";
-import { MVVSection } from "./components/MVVSection";
-import { StatsSection } from "./components/StatsSection";
-import { TeamSection } from "./components/TeamSection";
-import { CTASection } from "./components/CTASection";
-import "./styles/AboutPage.css";
+import { AboutHero } from './components/AboutHero';
+import { AboutContent } from './components/AboutContent';
+import { MVVSection } from './components/MVVSection';
+import { StatsSection } from './components/StatsSection';
+import { TeamSection } from './components/TeamSection';
+import { CTASection } from './components/CTASection';
+import './styles/About.css';
 
 export function AboutPage() {
   return (

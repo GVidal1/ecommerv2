@@ -1,7 +1,8 @@
-import { ContactHero } from "./components/ContactHero";
-import { ContactInfo } from "./components/ContactInfo";
-import { ContactForm } from "./components/ContactForm";
-import "./styles/ContactPage.css";
+import { ContactHero } from './components/ContactHero';
+import { ContactInfo } from './components/ContactInfo';
+import { ContactForm } from './components/ContactForm';
+import './styles/Contact.css';
+
 export function ContactPage() {
   return (
     <div className="contact-container">
