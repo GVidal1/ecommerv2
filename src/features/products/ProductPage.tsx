@@ -1,7 +1,6 @@
 import { useAppContext } from '../../hooks/useAppContext';
 import { ProductCard } from '../../layout/components/common/ProductCard';
-import { AddToCartBtn } from './components/AddToCartBtn';
-
+import { AddToCart } from './components/AddToCartBtn';
 // import './ProductsPage.css';
 
 const ProductsPage = () => {
@@ -22,7 +21,10 @@ const ProductsPage = () => {
             </ProductCard.Info>
 
             <ProductCard.Buttons>
-              <AddToCartBtn product={product} />
+              <AddToCart product={product}>
+                <AddToCart.AddButton />
+                <AddToCart.Controls />
+              </AddToCart>
             </ProductCard.Buttons>
           </ProductCard>
         ))}

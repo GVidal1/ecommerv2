@@ -6,6 +6,8 @@ import MainLayout from './layout/components/MainLayout';
 import HomePage from './features/home/HomePage';
 import NotFoundPage from './layout/components/404';
 import ProductsPage from './features/products/ProductPage';
+import ProductDetailPage from './features/products/ProductDetailPage';
+import CartPage from './features/cart/CartPage';
 
 function App() {
   return (
@@ -17,7 +19,9 @@ function App() {
 
         {/* Rutas de la app */}
         <Route path="products" element={<ProductsPage />} />
-        {/* <Route path="products/:id" element={<ProductDetailPage />} /> */}
+        <Route path="products/:id" element={<ProductDetailPage />} />
+
+        <Route path="cart" element={<CartPage />} />
 
         {/* <Route path="about" element={<AboutPage />} /> */}
         {/* <Route path="blog" element={<BlogPage />} /> */}

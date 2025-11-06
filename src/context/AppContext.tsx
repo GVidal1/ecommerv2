@@ -1,8 +1,8 @@
-import { createContext, useState, useEffect } from "react";
-import type { ReactNode } from "react";
-import { getProductsFromApi } from "../services/api";
-import usuariosBase from "../constants/listBaseUsers";
-import type { Product, User, CartItem } from "../types";
+import { createContext, useState, useEffect } from 'react';
+import { getProductsFromApi } from '../services/api';
+import usuariosBase from '../constants/listBaseUsers';
+import type { ReactNode } from 'react';
+import type { Product, User, CartItem } from '../types';
 
 interface AppContextType {
   products: Product[];
@@ -22,7 +22,7 @@ interface AppContextType {
   addUser: (user: User) => boolean;
   removeUserByEmail: (email: string) => void;
   // Acciones del Carrito
-  addProductToCart: (product: Product) => void;
+  addProductToCart: (product: Product, quantity: number) => void;
   removeProductFromCart: (productId: number) => void;
   updateCartQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
@@ -49,21 +49,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setProducts(apiProducts);
 
         // Cargar Usuarios
-        const storedUsers = localStorage.getItem("users");
+        const storedUsers = localStorage.getItem('users');
         if (storedUsers) {
           setUsers(JSON.parse(storedUsers));
         } else {
           setUsers(usuariosBase);
-          localStorage.setItem("users", JSON.stringify(usuariosBase));
+          localStorage.setItem('users', JSON.stringify(usuariosBase));
         }
 
-        const storedCurrentUser = localStorage.getItem("currentUser");
+        const storedCurrentUser = localStorage.getItem('currentUser');
         if (storedCurrentUser) {
           setCurrentUser(JSON.parse(storedCurrentUser));
         }
 
         // Cargar Carrito
-        const storedCart = localStorage.getItem("cart");
+        const storedCart = localStorage.getItem('cart');
         if (storedCart) {
           setCart(JSON.parse(storedCart));
         }
@@ -71,7 +71,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setError(null);
       } catch (err) {
         console.error(err);
-        setError("No se pudieron cargar los datos iniciales.");
+        setError('No se pudieron cargar los datos iniciales.');
       } finally {
         setIsLoading(false);
       }
@@ -82,17 +82,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const persistProducts = (newProducts: Product[]) => {
     setProducts(newProducts);
-    localStorage.setItem("products", JSON.stringify(newProducts));
+    localStorage.setItem('products', JSON.stringify(newProducts));
   };
 
   const persistUsers = (newUsers: User[]) => {
     setUsers(newUsers);
-    localStorage.setItem("users", JSON.stringify(newUsers));
+    localStorage.setItem('users', JSON.stringify(newUsers));
   };
 
   const persistCart = (newCart: CartItem[]) => {
     setCart(newCart);
-    localStorage.setItem("cart", JSON.stringify(newCart));
+    localStorage.setItem('cart', JSON.stringify(newCart));
   };
 
   // ========== AUTENTICACIÓN ==========
@@ -102,7 +102,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     );
     if (userFound) {
       setCurrentUser(userFound);
-      localStorage.setItem("currentUser", JSON.stringify(userFound));
+      localStorage.setItem('currentUser', JSON.stringify(userFound));
       return true;
     }
     return false;
@@ -110,13 +110,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const logoutUser = () => {
     setCurrentUser(null);
-    localStorage.removeItem("currentUser");
+    localStorage.removeItem('currentUser');
   };
 
   // ========== USUARIOS ==========
   const addUser = (user: User): boolean => {
     if (users.find((u) => u.email === user.email)) {
-      console.error("El email ya está registrado");
+      console.error('El email ya está registrado');
       return false;
     }
     persistUsers([...users, user]);
@@ -153,7 +153,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const generateNewProductId = (): number => {
     const currentMax = products.reduce((maxId, product) => {
-      if (typeof product.id === "number" && product.id >= 200) {
+      if (typeof product.id === 'number' && product.id >= 200) {
         return Math.max(maxId, product.id);
       }
       return maxId;
@@ -162,13 +162,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // ========== CARRITO ==========
-  const addProductToCart = (product: Product) => {
+  const addProductToCart = (product: Product, quantity = 1) => {
     const existingItem = cart.find((item) => item.id === product.id);
 
     if (existingItem) {
-      updateCartQuantity(product.id, existingItem.quantity + 1);
+      updateCartQuantity(product.id, existingItem.quantity + quantity);
     } else {
-      persistCart([...cart, { ...product, quantity: 1 }]);
+      persistCart([...cart, { ...product, quantity: quantity }]);
     }
   };
 
