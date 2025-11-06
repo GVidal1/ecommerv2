@@ -1,9 +1,11 @@
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, type FormEvent, type ChangeEvent, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useAppContext } from "../../../hooks/useAppContext";
 import "../styles/Login.css";
 
 export function Login() {
-  const { loginUser, currentUser } = useAppContext();
+  const navigate = useNavigate();
+  const { loginUser } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -83,11 +85,26 @@ export function Login() {
         setMessage("¡Bienvenido! Redirigiendo...");
         setMessageType("success");
 
+        // Guardar email si "recordarme" está marcado
+        if (remember) {
+          localStorage.setItem("rememberedEmail", email);
+        } else {
+          localStorage.removeItem("rememberedEmail");
+        }
+
         setTimeout(() => {
-          // Aquí integrarías con React Router
-          // const userRole = currentUser?.rol || 'user';
-          // navigate(userRole === 'admin' ? '/admin' : '/');
-          console.log("Redirigiendo al dashboard...");
+          // Obtener el usuario actual del localStorage después del login
+          const storedUser = localStorage.getItem("currentUser");
+          if (storedUser) {
+            const user = JSON.parse(storedUser);
+            if (user.rol === "admin") {
+              navigate("/admin");
+            } else {
+              navigate("/");
+            }
+          } else {
+            navigate("/");
+          }
         }, 800);
       } else {
         setMessage("Usuario o contraseña incorrectos");
@@ -101,6 +118,15 @@ export function Login() {
       setIsLoading(false);
     }
   };
+
+  // Cargar email recordado al montar el componente
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem("rememberedEmail");
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRemember(true);
+    }
+  }, []);
 
   return (
     <div className="container-login">
@@ -167,7 +193,7 @@ export function Login() {
               />
               Recordarme
             </label>
-            <a href="#/forgot-password">¿Olvidaste tu contraseña?</a>
+            <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
           </div>
 
           <button
@@ -188,7 +214,7 @@ export function Login() {
 
         <div className="register-link">
           <p>
-            ¿No tienes cuenta? <a href="#/register">Regístrate aquí</a>
+            ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
           </p>
         </div>
       </div>

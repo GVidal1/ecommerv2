@@ -37,28 +37,8 @@ export const Header = () => {
               alt="StylePoint Logo"
             />
           </Link>
-
-          {/* BOTÓN DE MENÚ MÓVIL */}
-          <button
-            id="mobile-menu-btn"
-            className="mobile-menu-btn"
-            onClick={toggleMobileMenu}>
-            {/*Íconos de Menú/Cerrar */}
-            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-
-          {/* Pasamos clase para controlar la visibilidad*/}
-          <Navbar className={isMobileMenuOpen ? 'navbar-mobile-open' : ''} />
-
-          {/* MENU DE OPCIONES USUARIO Y CARRITO */}
-          <div className="menu-opciones">
-            <ProfileMenu />
-            <CartIcon />
-          </div>
         </div>
       </div>
     </header>
   );
 };
-
-export default Header;

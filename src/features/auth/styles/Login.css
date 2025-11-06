@@ -1,0 +1,367 @@
+:root {
+  --color-primario: #2563eb;
+  --color-primario-rgb: 37, 99, 235;
+  --color-muted: #4338ca;
+  --bg-light: #ffffff;
+  --bg-normal: #f3f4f6;
+  --text-normal: #111827;
+  --text-muted: #6b7280;
+}
+
+.container-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    var(--bg-light) 0%,
+    var(--bg-normal) 100%
+  );
+}
+
+.login-box {
+  background: var(--bg-light);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 420px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-box h1 {
+  color: var(--color-primario);
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.login-box > p {
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  color: var(--text-normal);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--bg-normal);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background: var(--bg-light);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px rgba(var(--color-primario-rgb), 0.1);
+}
+
+.form-group.error input {
+  border-color: #e74c3c;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: shakeError 0.5s ease-in-out;
+}
+
+@keyframes shakeError {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.remember-me input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--color-primario);
+}
+
+.options a {
+  color: var(--color-primario);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.options a:hover {
+  color: var(--color-muted);
+  text-decoration: underline;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(
+    90deg,
+    var(--color-primario) 0%,
+    var(--color-muted) 100%
+  );
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(
+    90deg,
+    var(--color-primario) 20%,
+    var(--color-muted) 120%
+  );
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+#loginMessage {
+  text-align: center;
+  margin-top: 1rem;
+  font-weight: 500;
+  min-height: 24px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+#loginMessage:not(:empty) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#loginMessage.success {
+  color: #2ecc71;
+}
+
+#loginMessage.error {
+  color: #e74c3c;
+}
+
+.loading {
+  color: transparent !important;
+  position: relative;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .container-login {
+    padding: 1rem;
+  }
+
+  .login-box {
+    padding: 2rem;
+  }
+
+  .login-box h1 {
+    font-size: 1.75rem;
+  }
+
+  .options {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}
+
+/* Fondo blanco centrado */
+.container-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #fff;
+  font-family: "Segoe UI", sans-serif;
+  color: #000;
+}
+
+/* Caja gris clara */
+.login-box {
+  background: #f0f0f0;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease;
+}
+
+.login-box h1 {
+  margin-bottom: 0.5rem;
+}
+
+.login-box p {
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+/* Inputs */
+.login-box label {
+  display: block;
+  text-align: left;
+  font-size: 0.85rem;
+  margin: 0.5rem 0 0.2rem;
+}
+.login-box input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  color: #000;
+}
+
+/* Botón degradado celeste */
+.login-box button {
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(90deg, var(--color-primario), var(--color-muted));
+  cursor: pointer;
+  transition: 0.2s;
+}
+.login-box button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Opciones */
+.options {
+  text-align: right;
+  margin-bottom: 1rem;
+}
+.options a {
+  color: var(--color-primario);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.options a:hover {
+  text-decoration: underline;
+}
+
+/* Register link */
+.register-link {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--bg-normal);
+  text-align: center;
+}
+
+.register-link p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.register-link a {
+  color: var(--color-primario);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.register-link a:hover {
+  color: var(--color-muted);
+  text-decoration: underline;
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
