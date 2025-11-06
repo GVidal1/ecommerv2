@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { ArrowBigRight } from 'lucide-react';
 // CTA Section
 export function CTASection() {
   return (
@@ -11,7 +12,7 @@ export function CTASection() {
         </p>
         <Link to="/products" className="cta-button">
           <span>Ver Productos</span>
-          <span className="material-symbols-outlined">arrow_forward</span>
+          <ArrowBigRight />
         </Link>
       </div>
     </section>

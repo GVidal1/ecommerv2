@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import '../styles/Footer.css';
 
 export function Footer() {
@@ -23,19 +24,19 @@ export function Footer() {
           <h4>Navegación</h4>
           <ul>
             <li>
-              <a href="#/">Inicio</a>
+              <Link to="/">Inicio</Link>
             </li>
             <li>
-              <a href="#/products">Productos</a>
+              <Link to="/products">Productos</Link>
             </li>
             <li>
-              <a href="#/blogs">Blog</a>
+              <Link to="/blog">Blog</Link>
             </li>
             <li>
-              <a href="#/about">Acerca de</a>
+              <Link to="/about">Acerca de</Link>
             </li>
             <li>
-              <a href="#/contact">Contacto</a>
+              <Link to="/contact">Contacto</Link>
             </li>
           </ul>
         </nav>
