@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
 import { getProductsFromApi } from '../services/api';
-import usuariosBase from '../constants/listBaseUsers';
 import type { ReactNode } from 'react';
 import type { Product, User, CartItem } from '../types';
 
@@ -22,7 +21,7 @@ interface AppContextType {
   addUser: (user: User) => boolean;
   removeUserByEmail: (email: string) => void;
   // Acciones del Carrito
-  addProductToCart: (product: Product, quantity: number) => void;
+  addProductToCart: (product: Product, quantity?: number) => void;
   removeProductFromCart: (productId: number) => void;
   updateCartQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
@@ -30,7 +29,6 @@ interface AppContextType {
   getCartTotal: () => number;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
@@ -47,15 +45,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       try {
         const apiProducts = await getProductsFromApi();
         setProducts(apiProducts);
-
-        // Cargar Usuarios
-        const storedUsers = localStorage.getItem('users');
-        if (storedUsers) {
-          setUsers(JSON.parse(storedUsers));
-        } else {
-          setUsers(usuariosBase);
-          localStorage.setItem('users', JSON.stringify(usuariosBase));
-        }
 
         const storedCurrentUser = localStorage.getItem('currentUser');
         if (storedCurrentUser) {
