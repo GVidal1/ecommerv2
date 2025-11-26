@@ -1,19 +1,19 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from 'react-router-dom';
 
 // Layout Principal
-import MainLayout from "./layout/components/MainLayout";
+import MainLayout from './layout/components/MainLayout';
 // Pages
-import HomePage from "./features/home/HomePage";
-import NotFoundPage from "./layout/components/404";
-import ProductsPage from "./features/products/ProductPage";
-import ProductDetailPage from "./features/products/ProductDetailPage";
-import CartPage from "./features/cart/CartPage";
-import { AboutPage } from "./features/about/AboutPage";
-import { BlogPage } from "./features/blogs/BlogPage";
-import { ContactPage } from "./features/contact/ContactPage";
+import HomePage from './features/home/HomePage';
+import NotFoundPage from './layout/components/404';
+import ProductsPage from './features/products/ProductPage';
+import ProductDetailPage from './features/products/ProductDetailPage';
+import CartPage from './features/cart/CartPage';
+import { AboutPage } from './features/about/AboutPage';
+import { BlogPage } from './features/blogs/BlogPage';
+import { ContactPage } from './features/contact/ContactPage';
 //AUTH
-import { AdminPage } from "./features/auth/AdminPage";
-import { ProtectedRoute } from "./features/auth/components/ProtectedRoute";
+import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
+import { AdminPage } from './features/admin/AdminPage';
 
 function App() {
   return (

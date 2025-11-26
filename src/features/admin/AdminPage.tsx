@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Package,
@@ -9,21 +9,21 @@ import {
   Edit2,
   Trash2,
   Shield,
-} from "lucide-react";
-import { getCurrentUser, isAdmin } from "../auth/utils/authUtils";
-import "../auth/styles/Admin.css";
+} from 'lucide-react';
+import { getCurrentUser, isAdmin } from '../auth/utils/authUtils';
+import './styles/Admin.css';
 interface User {
   email: string;
   password: string;
   nombre: string;
-  rol: "admin" | "user";
+  rol: 'admin' | 'user';
   createdAt?: string;
 }
 
 interface CurrentUser {
   email: string;
   nombre: string;
-  rol: "admin" | "user";
+  rol: 'admin' | 'user';
 }
 
 interface Product {
@@ -38,19 +38,19 @@ interface Product {
 }
 
 const CATEGORIES = [
-  "Camisetas",
-  "Pantalones",
-  "Zapatos",
-  "Accesorios",
-  "Chaquetas",
-  "Vestidos",
-  "Otros",
+  'Camisetas',
+  'Pantalones',
+  'Zapatos',
+  'Accesorios',
+  'Chaquetas',
+  'Vestidos',
+  'Otros',
 ];
 
 export const AdminPage = () => {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Users state
@@ -59,22 +59,22 @@ export const AdminPage = () => {
   // Products state
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState('');
 
   // Form state
   const [formData, setFormData] = useState({
-    title: "",
-    price: "",
-    category: "",
-    description: "",
-    thumbnail: "",
-    stock: "",
+    title: '',
+    price: '',
+    category: '',
+    description: '',
+    thumbnail: '',
+    stock: '',
   });
 
   useEffect(() => {
     const user = getCurrentUser();
     if (!user || !isAdmin()) {
-      navigate("/");
+      navigate('/');
       return;
     }
     setCurrentUser(user);
@@ -83,14 +83,14 @@ export const AdminPage = () => {
   }, [navigate]);
 
   const loadUsers = () => {
-    const stored = localStorage.getItem("users");
+    const stored = localStorage.getItem('users');
     if (stored) {
       setUsers(JSON.parse(stored));
     }
   };
 
   const loadProducts = () => {
-    const stored = localStorage.getItem("products");
+    const stored = localStorage.getItem('products');
     if (stored) {
       setProducts(JSON.parse(stored));
     } else {
@@ -101,7 +101,7 @@ export const AdminPage = () => {
   const removeUser = (email: string) => {
     if (window.confirm(`¿Eliminar usuario ${email}?`)) {
       const updatedUsers = users.filter((u) => u.email !== email);
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
       setUsers(updatedUsers);
     }
   };
@@ -109,7 +109,7 @@ export const AdminPage = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
-      setSelectedImage("");
+      setSelectedImage('');
       return;
     }
 
@@ -122,15 +122,15 @@ export const AdminPage = () => {
 
   const resetForm = () => {
     setFormData({
-      title: "",
-      price: "",
-      category: "",
-      description: "",
-      thumbnail: "",
-      stock: "",
+      title: '',
+      price: '',
+      category: '',
+      description: '',
+      thumbnail: '',
+      stock: '',
     });
     setEditingProduct(null);
-    setSelectedImage("");
+    setSelectedImage('');
   };
 
   const handleSubmitProduct = (e: React.FormEvent) => {
@@ -140,7 +140,7 @@ export const AdminPage = () => {
 
     if (!title || !price || !category) return;
 
-    const finalThumbnail = selectedImage || thumbnail || "";
+    const finalThumbnail = selectedImage || thumbnail || '';
     const finalImages = selectedImage
       ? [selectedImage]
       : thumbnail
@@ -162,7 +162,7 @@ export const AdminPage = () => {
             }
           : p
       );
-      localStorage.setItem("products", JSON.stringify(updatedProducts));
+      localStorage.setItem('products', JSON.stringify(updatedProducts));
       setProducts(updatedProducts);
     } else {
       const newId =
@@ -178,7 +178,7 @@ export const AdminPage = () => {
         stock: stock ? parseInt(stock) : 0,
       };
       const updatedProducts = [...products, newProduct];
-      localStorage.setItem("products", JSON.stringify(updatedProducts));
+      localStorage.setItem('products', JSON.stringify(updatedProducts));
       setProducts(updatedProducts);
     }
 
@@ -191,18 +191,18 @@ export const AdminPage = () => {
       title: product.title,
       price: product.price.toString(),
       category: product.category,
-      description: product.description || "",
-      thumbnail: product.thumbnail || "",
-      stock: product.stock?.toString() || "",
+      description: product.description || '',
+      thumbnail: product.thumbnail || '',
+      stock: product.stock?.toString() || '',
     });
-    setSelectedImage(product.thumbnail || "");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setSelectedImage(product.thumbnail || '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const removeProduct = (id: number) => {
     if (window.confirm(`¿Eliminar producto ${id}?`)) {
       const updatedProducts = products.filter((p) => p.id !== id);
-      localStorage.setItem("products", JSON.stringify(updatedProducts));
+      localStorage.setItem('products', JSON.stringify(updatedProducts));
       setProducts(updatedProducts);
     }
   };
@@ -288,19 +288,19 @@ export const AdminPage = () => {
                     <div className="user-info">
                       <img
                         src={`https://ui-avatars.com/api/?name=${
-                          user.nombre || "User"
+                          user.nombre || 'User'
                         }&background=2563eb&color=fff`}
                         alt={user.nombre || user.email}
                       />
                       <div>
                         <div className="user-name">
-                          {user.nombre || "Sin nombre"}
+                          {user.nombre || 'Sin nombre'}
                         </div>
                         <div className="user-email">{user.email}</div>
                       </div>
                     </div>
                   </td>
-                  <td>{user.rol || "usuario"}</td>
+                  <td>{user.rol || 'usuario'}</td>
                   <td>
                     {new Date(
                       user.createdAt || Date.now()
@@ -309,8 +309,7 @@ export const AdminPage = () => {
                   <td className="td-actions">
                     <button
                       className="admin-btn admin-btn-danger"
-                      onClick={() => removeUser(user.email)}
-                    >
+                      onClick={() => removeUser(user.email)}>
                       <Trash2 size={16} />
                       Eliminar
                     </button>
@@ -339,7 +338,7 @@ export const AdminPage = () => {
 
       <div className="admin-grid">
         <div className="admin-form">
-          <h3>{editingProduct ? "Editar Producto" : "Añadir Producto"}</h3>
+          <h3>{editingProduct ? 'Editar Producto' : 'Añadir Producto'}</h3>
           <form onSubmit={handleSubmitProduct}>
             <div className="grid">
               <label>
@@ -371,8 +370,7 @@ export const AdminPage = () => {
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  required
-                >
+                  required>
                   <option value="" disabled>
                     Selecciona una categoría
                   </option>
@@ -440,13 +438,12 @@ export const AdminPage = () => {
                 <button
                   type="button"
                   className="admin-btn admin-btn-secondary"
-                  onClick={resetForm}
-                >
+                  onClick={resetForm}>
                   Cancelar
                 </button>
               )}
               <button type="submit" className="admin-btn admin-btn-primary">
-                {editingProduct ? "Guardar" : "Agregar"}
+                {editingProduct ? 'Guardar' : 'Agregar'}
               </button>
             </div>
           </form>
@@ -471,7 +468,7 @@ export const AdminPage = () => {
                         <img
                           src={
                             product.thumbnail ||
-                            "https://via.placeholder.com/50"
+                            'https://via.placeholder.com/50'
                           }
                           alt={product.title}
                         />
@@ -484,19 +481,17 @@ export const AdminPage = () => {
                       </div>
                     </td>
                     <td>${Number(product.price).toFixed(2)}</td>
-                    <td>{product.stock || "N/A"}</td>
+                    <td>{product.stock || 'N/A'}</td>
                     <td className="td-actions">
                       <button
                         className="admin-btn admin-btn-secondary"
-                        onClick={() => editProduct(product)}
-                      >
+                        onClick={() => editProduct(product)}>
                         <Edit2 size={16} />
                         Editar
                       </button>
                       <button
                         className="admin-btn admin-btn-danger"
-                        onClick={() => removeProduct(product.id)}
-                      >
+                        onClick={() => removeProduct(product.id)}>
                         <Trash2 size={16} />
                         Eliminar
                       </button>
@@ -521,39 +516,36 @@ export const AdminPage = () => {
 
   return (
     <div className="container-admin">
-      <aside className={`admin-sidebar ${isSidebarOpen ? "open" : ""}`}>
+      <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="admin-logo">
           <Shield size={32} />
           <h1>Admin Panel</h1>
         </div>
         <nav className="admin-nav">
           <button
-            className={activeTab === "dashboard" ? "active" : ""}
+            className={activeTab === 'dashboard' ? 'active' : ''}
             onClick={() => {
-              setActiveTab("dashboard");
+              setActiveTab('dashboard');
               setIsSidebarOpen(false);
-            }}
-          >
+            }}>
             <LayoutDashboard size={20} />
             Dashboard
           </button>
           <button
-            className={activeTab === "products" ? "active" : ""}
+            className={activeTab === 'products' ? 'active' : ''}
             onClick={() => {
-              setActiveTab("products");
+              setActiveTab('products');
               setIsSidebarOpen(false);
-            }}
-          >
+            }}>
             <Package size={20} />
             Productos
           </button>
           <button
-            className={activeTab === "users" ? "active" : ""}
+            className={activeTab === 'users' ? 'active' : ''}
             onClick={() => {
-              setActiveTab("users");
+              setActiveTab('users');
               setIsSidebarOpen(false);
-            }}
-          >
+            }}>
             <Users size={20} />
             Usuarios
           </button>
@@ -564,8 +556,7 @@ export const AdminPage = () => {
         <div className="admin-header-left">
           <button
             className="admin-btn admin-btn-secondary"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
           <div className="breadcrumb">Panel de Administración</div>
@@ -580,8 +571,7 @@ export const AdminPage = () => {
           </div>
           <button
             className="admin-btn admin-btn-secondary"
-            onClick={() => navigate("/")}
-          >
+            onClick={() => navigate('/')}>
             Salir
           </button>
         </div>
@@ -589,9 +579,9 @@ export const AdminPage = () => {
 
       <main className="admin-main">
         <div id="admin-content">
-          {activeTab === "dashboard" && renderDashboard()}
-          {activeTab === "users" && renderUsers()}
-          {activeTab === "products" && renderProducts()}
+          {activeTab === 'dashboard' && renderDashboard()}
+          {activeTab === 'users' && renderUsers()}
+          {activeTab === 'products' && renderProducts()}
         </div>
       </main>
     </div>
