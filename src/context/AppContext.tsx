@@ -132,14 +132,31 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   //PRODUCTOS
   const addProduct = (product: Product) =>
     updateProductsState([product, ...products]);
-  const removeProductById = (productId: number) =>
+
+  const removeProductById = (productId: number) => {
     updateProductsState(products.filter((p) => p.id !== productId));
+
+    setCart((prevCart) =>
+      prevCart.filter((item) => item.productId !== productId)
+    );
+  };
+
   const updateProductById = (productId: number, updates: Partial<Product>) => {
     const newProducts = products.map((product) =>
       product.id === productId ? { ...product, ...updates } : product
     );
     updateProductsState(newProducts);
+
+    setCart((prevCart) =>
+      prevCart.map((item) => {
+        if (item.productId === productId) {
+          return { ...item, ...updates };
+        }
+        return item;
+      })
+    );
   };
+
   const generateNewProductId = (): number => {
     const currentMax = products.reduce(
       (maxId, product) =>

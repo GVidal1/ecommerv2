@@ -33,7 +33,7 @@ interface AddToCartProps {
 export const AddToCart = ({ product, children }: AddToCartProps) => {
   const { cart, addProductToCart, updateCartQuantity } = useAppContext();
 
-  const cartItem = cart.find((item) => item.id === product.id);
+  const cartItem = cart.find((item) => item.productId === product.id);
   const quantity = cartItem?.quantity || 0;
 
   const handleAdd = (e: React.MouseEvent) => {

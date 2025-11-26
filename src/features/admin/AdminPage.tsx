@@ -10,8 +10,16 @@ import {
   Trash2,
   Shield,
 } from 'lucide-react';
+import { useAppContext } from '../../hooks/useAppContext';
 import { getCurrentUser, isAdmin } from '../auth/utils/authUtils';
+import {
+  createProductApi,
+  updateProductApi,
+  deleteProductApi,
+} from '../../services/api';
 import './styles/Admin.css';
+import listOfCategories from '../../constants/listOfCategories';
+
 interface User {
   email: string;
   password: string;
@@ -26,8 +34,8 @@ interface CurrentUser {
   rol: 'admin' | 'user';
 }
 
-interface Product {
-  id: number;
+interface ProductForm {
+  id?: number;
   title: string;
   price: number;
   category: string;
@@ -37,29 +45,23 @@ interface Product {
   stock?: number;
 }
 
-const CATEGORIES = [
-  'Camisetas',
-  'Pantalones',
-  'Zapatos',
-  'Accesorios',
-  'Chaquetas',
-  'Vestidos',
-  'Otros',
-];
-
 export const AdminPage = () => {
   const navigate = useNavigate();
+  const { products, addProduct, updateProductById, removeProductById } =
+    useAppContext();
+
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Users state
   const [users, setUsers] = useState<User[]>([]);
 
-  // Products state
-  const [products, setProducts] = useState<Product[]>([]);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  // Estado de edicion
+  const [editingProduct, setEditingProduct] = useState<ProductForm | null>(
+    null
+  );
   const [selectedImage, setSelectedImage] = useState('');
+  const [isLoadingAction, setIsLoadingAction] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -79,22 +81,12 @@ export const AdminPage = () => {
     }
     setCurrentUser(user);
     loadUsers();
-    loadProducts();
   }, [navigate]);
 
   const loadUsers = () => {
     const stored = localStorage.getItem('users');
     if (stored) {
       setUsers(JSON.parse(stored));
-    }
-  };
-
-  const loadProducts = () => {
-    const stored = localStorage.getItem('products');
-    if (stored) {
-      setProducts(JSON.parse(stored));
-    } else {
-      setProducts([]);
     }
   };
 
@@ -112,7 +104,6 @@ export const AdminPage = () => {
       setSelectedImage('');
       return;
     }
-
     const reader = new FileReader();
     reader.onload = () => {
       setSelectedImage(reader.result as string);
@@ -133,12 +124,13 @@ export const AdminPage = () => {
     setSelectedImage('');
   };
 
-  const handleSubmitProduct = (e: React.FormEvent) => {
+  const handleSubmitProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const { title, price, category, description, thumbnail, stock } = formData;
 
     if (!title || !price || !category) return;
+
+    setIsLoadingAction(true);
 
     const finalThumbnail = selectedImage || thumbnail || '';
     const finalImages = selectedImage
@@ -147,45 +139,49 @@ export const AdminPage = () => {
       ? [thumbnail]
       : [];
 
-    if (editingProduct) {
-      const updatedProducts = products.map((p) =>
-        p.id === editingProduct.id
-          ? {
-              ...p,
-              title,
-              price: parseFloat(price),
-              category,
-              description,
-              thumbnail: finalThumbnail,
-              images: finalImages,
-              stock: stock ? parseInt(stock) : 0,
-            }
-          : p
-      );
-      localStorage.setItem('products', JSON.stringify(updatedProducts));
-      setProducts(updatedProducts);
-    } else {
-      const newId =
-        products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
-      const newProduct: Product = {
-        id: newId,
-        title,
-        price: parseFloat(price),
-        category,
-        description,
-        thumbnail: finalThumbnail,
-        images: finalImages,
-        stock: stock ? parseInt(stock) : 0,
-      };
-      const updatedProducts = [...products, newProduct];
-      localStorage.setItem('products', JSON.stringify(updatedProducts));
-      setProducts(updatedProducts);
-    }
+    const productPayload = {
+      title,
+      price: parseFloat(price),
+      category,
+      description,
+      thumbnail: finalThumbnail,
+      images: finalImages,
+      stock: stock ? parseInt(stock) : 0,
+      rating: 0,
+      discountPercentage: 0,
+    };
 
-    resetForm();
+    try {
+      if (editingProduct && editingProduct.id) {
+        console.log('Actualizando producto ID:', editingProduct.id);
+
+        const updatedProduct = await updateProductApi(
+          editingProduct.id,
+          productPayload
+        );
+
+        updateProductById(editingProduct.id, updatedProduct);
+
+        alert('Producto actualizado');
+      } else {
+        console.log('Creando nuevo producto');
+
+        const newProduct = await createProductApi(productPayload);
+
+        addProduct(newProduct);
+
+        alert('Producto creado: ' + newProduct.id);
+      }
+      resetForm();
+    } catch (error) {
+      console.error(error);
+      alert('Ocurrió un error al guardar el producto');
+    } finally {
+      setIsLoadingAction(false);
+    }
   };
 
-  const editProduct = (product: Product) => {
+  const editProduct = (product: any) => {
     setEditingProduct(product);
     setFormData({
       title: product.title,
@@ -199,11 +195,18 @@ export const AdminPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const removeProduct = (id: number) => {
-    if (window.confirm(`¿Eliminar producto ${id}?`)) {
-      const updatedProducts = products.filter((p) => p.id !== id);
-      localStorage.setItem('products', JSON.stringify(updatedProducts));
-      setProducts(updatedProducts);
+  const removeProduct = async (id: number) => {
+    if (
+      window.confirm(`¿Eliminar producto ${id}? Esta acción es irreversible.`)
+    ) {
+      try {
+        await deleteProductApi(id);
+
+        removeProductById(id);
+      } catch (error) {
+        console.error(error);
+        alert('Error al eliminar el producto. Intente nuevamente.');
+      }
     }
   };
 
@@ -333,7 +336,7 @@ export const AdminPage = () => {
     <>
       <div className="admin-section-header">
         <h2>Gestión de Productos</h2>
-        <p>Administra el catálogo de productos</p>
+        <p>Administra el catálogo de productos desde la Base de Datos</p>
       </div>
 
       <div className="admin-grid">
@@ -374,7 +377,7 @@ export const AdminPage = () => {
                   <option value="" disabled>
                     Selecciona una categoría
                   </option>
-                  {CATEGORIES.map((cat) => (
+                  {listOfCategories.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>
@@ -442,8 +445,15 @@ export const AdminPage = () => {
                   Cancelar
                 </button>
               )}
-              <button type="submit" className="admin-btn admin-btn-primary">
-                {editingProduct ? 'Guardar' : 'Agregar'}
+              <button
+                type="submit"
+                className="admin-btn admin-btn-primary"
+                disabled={isLoadingAction}>
+                {isLoadingAction
+                  ? 'Procesando...'
+                  : editingProduct
+                  ? 'Guardar Cambios'
+                  : 'Agregar Producto'}
               </button>
             </div>
           </form>

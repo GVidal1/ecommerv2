@@ -9,22 +9,21 @@ export const ProductInCart = ({ item }: ProductInCartProps) => {
   const { updateCartQuantity, removeProductFromCart } = useAppContext();
 
   const handleIncrease = () => {
-    updateCartQuantity(item.id, item.quantity + 1);
+    updateCartQuantity(item.productId, item.quantity + 1);
   };
 
   const handleDecrease = () => {
-    updateCartQuantity(item.id, item.quantity - 1);
+    updateCartQuantity(item.productId, item.quantity - 1);
   };
 
   const handleRemove = () => {
-    removeProductFromCart(item.id);
+    removeProductFromCart(item.productId);
   };
 
-  const itemTotal = (
-    item.price *
-    item.quantity *
-    (1 - item.discountPercentage / 100)
-  ).toFixed(2);
+  const priceWithDiscount =
+    item.price * (1 - (item.discountPercentage || 0) / 100);
+
+  const itemTotal = (priceWithDiscount * item.quantity).toFixed(2);
 
   return (
     <div className="cartProduct-container">
@@ -32,13 +31,20 @@ export const ProductInCart = ({ item }: ProductInCartProps) => {
 
       <div className="cartProduct-info">
         <h4>{item.title}</h4>
-        <p>{item.description}</p>
-        <p>Precio unitario: ${item.price}</p>
+        <p className="description">{item.description}</p>
+        <p>Precio unitario: ${item.price.toFixed(2)}</p>
+        {item.discountPercentage > 0 && (
+          <span className="discount-badge">
+            {item.discountPercentage}% de descuento
+          </span>
+        )}
       </div>
 
       <div className="cartProduct-controls">
         <div className="quantity-controls">
-          <button onClick={handleDecrease}>-</button>
+          <button onClick={handleDecrease} disabled={item.quantity <= 1}>
+            -
+          </button>
           <span>{item.quantity}</span>
           <button onClick={handleIncrease}>+</button>
         </div>

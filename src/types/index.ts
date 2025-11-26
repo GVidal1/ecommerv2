@@ -8,6 +8,7 @@ export interface Product {
   category: string;
   images: string[];
   discountPercentage: number;
+  stock?: number;
 }
 
 export interface User {
@@ -19,4 +20,5 @@ export interface User {
 
 export interface CartItem extends Product {
   quantity: number;
+  productId: number;
 }
