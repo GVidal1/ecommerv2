@@ -46,12 +46,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const apiProducts = await getProductsFromApi();
         setProducts(apiProducts);
 
+        const storedUsers = localStorage.getItem('users');
+        if (storedUsers) {
+          setUsers(JSON.parse(storedUsers));
+        }
+
         const storedCurrentUser = localStorage.getItem('currentUser');
         if (storedCurrentUser) {
           setCurrentUser(JSON.parse(storedCurrentUser));
         }
 
-        // Cargar Carrito
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {
           setCart(JSON.parse(storedCart));
@@ -69,9 +73,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     loadInitialData();
   }, []);
 
-  const persistProducts = (newProducts: Product[]) => {
+  const updateProductsState = (newProducts: Product[]) => {
     setProducts(newProducts);
-    localStorage.setItem('products', JSON.stringify(newProducts));
   };
 
   const persistUsers = (newUsers: User[]) => {
@@ -84,7 +87,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('cart', JSON.stringify(newCart));
   };
 
-  // ========== AUTENTICACIÓN ==========
+  // AUTENTICACION
   const loginUser = (email: string, password: string): boolean => {
     const userFound = users.find(
       (u) => u.email === email && u.password === password
@@ -102,7 +105,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('currentUser');
   };
 
-  // ========== USUARIOS ==========
+  // USUARIOS
   const addUser = (user: User): boolean => {
     if (users.find((u) => u.email === user.email)) {
       console.error('El email ya está registrado');
@@ -116,41 +119,37 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     persistUsers(users.filter((u) => u.email !== email));
   };
 
-  // ========== PRODUCTOS ==========
+  // PRODUCTOS
+
   const addProduct = (product: Product) => {
-    persistProducts([product, ...products]);
+    updateProductsState([product, ...products]);
   };
 
   const removeProductById = (productId: number) => {
-    persistProducts(products.filter((p) => p.id !== productId));
+    updateProductsState(products.filter((p) => p.id !== productId));
   };
 
   const updateProductById = (productId: number, updates: Partial<Product>) => {
-    let updated = false;
     const newProducts = products.map((product) => {
       if (product.id === productId) {
-        updated = true;
         return { ...product, ...updates };
       }
       return product;
     });
-
-    if (updated) {
-      persistProducts(newProducts);
-    }
+    updateProductsState(newProducts);
   };
 
   const generateNewProductId = (): number => {
     const currentMax = products.reduce((maxId, product) => {
-      if (typeof product.id === 'number' && product.id >= 200) {
+      if (typeof product.id === 'number') {
         return Math.max(maxId, product.id);
       }
       return maxId;
-    }, 199);
+    }, 0);
     return currentMax + 1;
   };
 
-  // ========== CARRITO ==========
+  // CARRITO
   const addProductToCart = (product: Product, quantity = 1) => {
     const existingItem = cart.find((item) => item.id === product.id);
 
@@ -188,7 +187,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const getCartTotal = (): number => {
     return cart.reduce((total, item) => {
       const itemTotal = item.price * item.quantity;
-      const discount = (itemTotal * item.discountPercentage) / 100;
+      const discount = item.discountPercentage
+        ? (itemTotal * item.discountPercentage) / 100
+        : 0;
       return total + (itemTotal - discount);
     }, 0);
   };
