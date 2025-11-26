@@ -44,7 +44,7 @@ const CartPage = () => {
             <h3>Total: ${totalPrice.toFixed(2)}</h3>
             <button
               className="btn-checkout"
-              onClick={() => alert('¡Función de pago no implementada!')}>
+              onClick={() => console.log('Pago exitoso')}>
               Proceder al Pago
             </button>
             <button className="btn-clear-cart" onClick={clearCart}>

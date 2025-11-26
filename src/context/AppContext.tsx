@@ -1,5 +1,13 @@
 import { createContext, useState, useEffect } from 'react';
 import { getProductsFromApi } from '../services/api';
+import {
+  getCartFromApi,
+  addItemToCartApi,
+  removeItemFromCartApi,
+  updateCartQuantityApi,
+  clearCartApi,
+} from '../services/cartService';
+
 import type { ReactNode } from 'react';
 import type { Product, User, CartItem } from '../types';
 
@@ -39,6 +47,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Carga inicial de datos
   useEffect(() => {
     async function loadInitialData() {
       setIsLoading(true);
@@ -47,18 +56,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setProducts(apiProducts);
 
         const storedUsers = localStorage.getItem('users');
-        if (storedUsers) {
-          setUsers(JSON.parse(storedUsers));
-        }
+        if (storedUsers) setUsers(JSON.parse(storedUsers));
 
         const storedCurrentUser = localStorage.getItem('currentUser');
         if (storedCurrentUser) {
-          setCurrentUser(JSON.parse(storedCurrentUser));
-        }
-
-        const storedCart = localStorage.getItem('cart');
-        if (storedCart) {
-          setCart(JSON.parse(storedCart));
+          const user = JSON.parse(storedCurrentUser);
+          setCurrentUser(user);
+          fetchUserCart(user.email);
         }
 
         setError(null);
@@ -69,9 +73,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(false);
       }
     }
-
     loadInitialData();
   }, []);
+
+  // para traer el carrito actualizado
+  const fetchUserCart = async (email: string) => {
+    try {
+      const items = await getCartFromApi(email);
+      setCart(items);
+    } catch (e) {
+      console.error('Error cargando carrito', e);
+    }
+  };
 
   const updateProductsState = (newProducts: Product[]) => {
     setProducts(newProducts);
@@ -82,11 +95,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('users', JSON.stringify(newUsers));
   };
 
-  const persistCart = (newCart: CartItem[]) => {
-    setCart(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
-  };
-
   // AUTENTICACION
   const loginUser = (email: string, password: string): boolean => {
     const userFound = users.find(
@@ -95,6 +103,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (userFound) {
       setCurrentUser(userFound);
       localStorage.setItem('currentUser', JSON.stringify(userFound));
+      fetchUserCart(userFound.email);
       return true;
     }
     return false;
@@ -102,6 +111,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const logoutUser = () => {
     setCurrentUser(null);
+    setCart([]);
     localStorage.removeItem('currentUser');
   };
 
@@ -119,67 +129,88 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     persistUsers(users.filter((u) => u.email !== email));
   };
 
-  // PRODUCTOS
-
-  const addProduct = (product: Product) => {
+  //PRODUCTOS
+  const addProduct = (product: Product) =>
     updateProductsState([product, ...products]);
-  };
-
-  const removeProductById = (productId: number) => {
+  const removeProductById = (productId: number) =>
     updateProductsState(products.filter((p) => p.id !== productId));
-  };
-
   const updateProductById = (productId: number, updates: Partial<Product>) => {
-    const newProducts = products.map((product) => {
-      if (product.id === productId) {
-        return { ...product, ...updates };
-      }
-      return product;
-    });
+    const newProducts = products.map((product) =>
+      product.id === productId ? { ...product, ...updates } : product
+    );
     updateProductsState(newProducts);
   };
-
   const generateNewProductId = (): number => {
-    const currentMax = products.reduce((maxId, product) => {
-      if (typeof product.id === 'number') {
-        return Math.max(maxId, product.id);
-      }
-      return maxId;
-    }, 0);
+    const currentMax = products.reduce(
+      (maxId, product) =>
+        typeof product.id === 'number' ? Math.max(maxId, product.id) : maxId,
+      0
+    );
     return currentMax + 1;
   };
 
-  // CARRITO
-  const addProductToCart = (product: Product, quantity = 1) => {
-    const existingItem = cart.find((item) => item.id === product.id);
+  // ACCIONES DEL CARRITO (API)
 
-    if (existingItem) {
-      updateCartQuantity(product.id, existingItem.quantity + quantity);
-    } else {
-      persistCart([...cart, { ...product, quantity: quantity }]);
+  const addProductToCart = async (product: Product, quantity = 1) => {
+    if (!currentUser) {
+      alert('Debes iniciar sesión para agregar al carrito');
+      return;
+    }
+    try {
+      // actualizamos el estado con la respuesta
+      const updatedItems = await addItemToCartApi(
+        currentUser.email,
+        product.id,
+        quantity
+      );
+      setCart(updatedItems);
+    } catch (error) {
+      console.error('Error agregando al carrito', error);
     }
   };
 
-  const removeProductFromCart = (productId: number) => {
-    persistCart(cart.filter((item) => item.id !== productId));
+  const removeProductFromCart = async (productId: number) => {
+    if (!currentUser) return;
+    try {
+      const updatedItems = await removeItemFromCartApi(
+        currentUser.email,
+        productId
+      );
+      setCart(updatedItems);
+    } catch (error) {
+      console.error('Error eliminando del carrito', error);
+    }
   };
 
-  const updateCartQuantity = (productId: number, quantity: number) => {
+  const updateCartQuantity = async (productId: number, quantity: number) => {
+    if (!currentUser) return;
     if (quantity <= 0) {
       removeProductFromCart(productId);
       return;
     }
-
-    const updatedCart = cart.map((item) =>
-      item.id === productId ? { ...item, quantity } : item
-    );
-    persistCart(updatedCart);
+    try {
+      const updatedItems = await updateCartQuantityApi(
+        currentUser.email,
+        productId,
+        quantity
+      );
+      setCart(updatedItems);
+    } catch (error) {
+      console.error('Error actualizando cantidad', error);
+    }
   };
 
-  const clearCart = () => {
-    persistCart([]);
+  const clearCart = async () => {
+    if (!currentUser) return;
+    try {
+      await clearCartApi(currentUser.email);
+      setCart([]);
+    } catch (error) {
+      console.error('Error vaciando carrito', error);
+    }
   };
 
+  // Calculos locales
   const getTotalProductsInCart = (): number => {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
