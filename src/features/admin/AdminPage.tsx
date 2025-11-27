@@ -32,7 +32,7 @@ export function AdminPage() {
     const token = getAuthToken();
     const currentUserData = getCurrentUser();
 
-    console.log("🔍 DEBUG AdminPage.loadUsers:");
+    console.log(" DEBUG AdminPage.loadUsers:");
     console.log("  - Token existe:", !!token);
     console.log("  - Usuario actual:", currentUserData);
     console.log("  - Es admin?:", isAdmin());
