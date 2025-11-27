@@ -38,10 +38,10 @@ interface AppContextType {
   updateProductById: (productId: number, updates: Partial<Product>) => void;
   generateNewProductId: () => number;
   // Acciones de Autenticación/Usuarios
-  loginUser: (email: string, password: string) => boolean; // ⚠️ DEPRECADO
+  loginUser: (email: string, password: string) => boolean; // DEPRECADO
   logoutUser: () => void;
-  addUser: (user: User) => boolean; // ⚠️ DEPRECADO
-  removeUserByEmail: (email: string) => void; // ⚠️ DEPRECADO
+  addUser: (user: User) => boolean; //  DEPRECADO
+  removeUserByEmail: (email: string) => void; // DEPRECADO
   // Acciones del Carrito
   addProductToCart: (product: Product, quantity?: number) => void;
   removeProductFromCart: (productId: number) => void;
@@ -80,7 +80,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
         setError(null);
       } catch (err: unknown) {
-        // 👈 Corregido: error como unknown
+        // Corregido: error como unknown
         console.error(err);
         setError("No se pudieron cargar los datos iniciales.");
       } finally {
@@ -96,7 +96,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       const items = await getCartFromApi(email);
       setCart(items);
     } catch (e: unknown) {
-      // 👈 Corregido: error como unknown
+      // Corregido: error como unknown
       console.error("Error cargando carrito", e);
     }
   };
@@ -105,14 +105,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setProducts(newProducts);
   };
 
-  // ⚠️ DEPRECADO - Ya no persistimos users en localStorage
+  // DEPRECADO - Ya no persistimos users en localStorage
   // Esta función es redundante ya que el estado 'users' no se usa localmente
   // y no se persiste. Se elimina para corregir el warning de ESLint.
   // const persistUsers = (newUsers: User[]) => {
   //   setUsers(newUsers);
   // };
 
-  // ⚠️ DEPRECADO - Este método ya no se usa
+  // DEPRECADO - Este método ya no se usa
   // El login real está en LoginPage.tsx → loginUserApi()
   // Se marcan los parámetros como unused usando '_' para eliminar el warning de ESLint.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -123,14 +123,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return false;
   };
 
-  // ✅ ACTUALIZADO - Usa el servicio real de autenticación
+  // ACTUALIZADO - Usa el servicio real de autenticación
   const logoutUser = () => {
     setCurrentUser(null);
     setCart([]);
-    logoutAuthService(); // ✅ Llama al servicio que limpia token y currentUser
+    logoutAuthService(); // Llama al servicio que limpia token y currentUser
   };
 
-  // ⚠️ DEPRECADO - Registro de usuarios
+  // DEPRECADO - Registro de usuarios
   // Se marca el parámetro como unused usando '_' para eliminar el warning de ESLint.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addUser = (_user: User): boolean => {
@@ -140,7 +140,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return false;
   };
 
-  // ⚠️ DEPRECADO
+  // DEPRECADO
   // Se marca el parámetro como unused usando '_' para eliminar el warning de ESLint.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const removeUserByEmail = (_email: string) => {
@@ -226,7 +226,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       );
       setCart(updatedItems);
     } catch (error: unknown) {
-      // 👈 Corregido: error como unknown
+      //  Corregido: error como unknown
       console.error("Error eliminando del carrito", error);
       alert(
         getErrorMessage(error, "Error al eliminar el producto del carrito.")
@@ -262,7 +262,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       await clearCartApi(currentUser.email);
       setCart([]);
     } catch (error: unknown) {
-      // 👈 Corregido: error como unknown
+      // Corregido: error como unknown
       console.error("Error vaciando carrito", error);
       alert(getErrorMessage(error, "Error al vaciar el carrito."));
     }

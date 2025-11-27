@@ -80,7 +80,7 @@ export function AdminPage() {
         errorMessage.includes("Sesión expirada");
 
       if (isUnauthorized) {
-        console.error("❌ Error 401 detectado. Mensaje:", errorMessage);
+        console.error("Error 401 detectado. Mensaje:", errorMessage);
         alert(
           `Error de autenticación: ${errorMessage}\n\nPor favor, inicia sesión nuevamente.`
         );
@@ -89,7 +89,7 @@ export function AdminPage() {
         setIsLoadingUsers(false);
         return;
       } else {
-        console.error("❌ Error desconocido:", errorMessage);
+        console.error("Error desconocido:", errorMessage);
         alert(
           `Error al cargar usuarios: ${errorMessage}\n\nVerifica la conexión o los permisos.`
         );
