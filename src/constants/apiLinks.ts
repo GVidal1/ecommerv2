@@ -1,13 +1,13 @@
 // Microservicio de Productos (Puerto 8083)
 export const API_PRODUCTS =
-  "https://94js12g4-8083.brs.devtunnels.ms/api/products";
+  'https://xd6w381w-8083.use2.devtunnels.ms/v1/products';
 
 // Microservicio de Carrito (Puerto 8084)
-export const API_CART_URL = "https://94js12g4-8084.brs.devtunnels.ms/api/cart";
+export const API_CART_URL = 'https://xd6w381w-8085.use2.devtunnels.ms/v1/cart';
 
 // Microservicio de Autenticacion (Puerto 8081)
-export const API_AUTH_URL = "https://94js12g4-8081.brs.devtunnels.ms/api/auth";
+export const API_AUTH_URL = 'https://xd6w381w-8081.use2.devtunnels.ms/v1/auth';
 
 // Microservicio de Usuarios (Puerto 8082)
 export const API_USERS_URL =
-  "https://94js12g4-8082.brs.devtunnels.ms/api/users";
+  'https://xd6w381w-8082.use2.devtunnels.ms/v1/users';

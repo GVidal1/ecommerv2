@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
-import "../styles/admin.css";
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import '../styles/admin.css';
 
 // ========== CONTEXT ==========
 interface AdminLayoutContextType {
@@ -18,7 +18,7 @@ const useAdminLayout = () => {
   const context = useContext(AdminLayoutContext);
   if (!context) {
     throw new Error(
-      "Los componentes de administrador deben usarse dentro de AdminLayout"
+      'Los componentes de administrador deben usarse dentro de AdminLayout'
     );
   }
   return context;
@@ -32,7 +32,7 @@ interface AdminLayoutProps {
 
 export function AdminLayout({
   children,
-  defaultTab = "dashboard",
+  defaultTab = 'dashboard',
 }: AdminLayoutProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -48,8 +48,7 @@ export function AdminLayout({
         isSidebarOpen,
         toggleSidebar,
         closeSidebar,
-      }}
-    >
+      }}>
       <div className="container-admin">{children}</div>
     </AdminLayoutContext.Provider>
   );
@@ -75,7 +74,7 @@ AdminLayout.Sidebar = function Sidebar({ children }: SidebarProps) {
       {isSidebarOpen && window.innerWidth <= 768 && (
         <div className="sidebar-overlay" onClick={handleOverlayClick} />
       )}
-      <aside className={`admin-sidebar ${isSidebarOpen ? "open" : ""}`}>
+      <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
         {children}
       </aside>
     </>
@@ -158,7 +157,7 @@ AdminLayout.NavItem = function NavItem({
   };
 
   return (
-    <button className={activeTab === id ? "active" : ""} onClick={handleClick}>
+    <button className={activeTab === id ? 'active' : ''} onClick={handleClick}>
       {icon}
       {label}
     </button>
@@ -180,7 +179,7 @@ interface HeaderLeftProps {
 }
 
 AdminLayout.HeaderLeft = function HeaderLeft({
-  breadcrumb = "Panel de Administración",
+  breadcrumb = 'Panel de Administración',
 }: HeaderLeftProps) {
   const { toggleSidebar } = useAdminLayout();
 
@@ -189,8 +188,7 @@ AdminLayout.HeaderLeft = function HeaderLeft({
       <button
         className="admin-btn admin-btn-secondary"
         id="menu-toggle"
-        onClick={toggleSidebar}
-      >
+        onClick={toggleSidebar}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path
             d="M4 6H20M4 12H20M4 18H20"

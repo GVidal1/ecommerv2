@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, type FormEvent, type ChangeEvent } from 'react';
 
 interface FormData {
   name: string;
@@ -19,48 +19,48 @@ interface FormErrors {
 
 export function ContactForm() {
   const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
     privacy: false,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
-    "idle" | "success" | "error"
-  >("idle");
+    'idle' | 'success' | 'error'
+  >('idle');
 
   const validateField = (name: string, value: string | boolean): string => {
     switch (name) {
-      case "name":
-        if (!value) return "Este campo es obligatorio";
+      case 'name':
+        if (!value) return 'Este campo es obligatorio';
         break;
-      case "email":
-        if (!value) return "Este campo es obligatorio";
+      case 'email':
+        if (!value) return 'Este campo es obligatorio';
         if (
-          typeof value === "string" &&
+          typeof value === 'string' &&
           !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
         ) {
-          return "Por favor, ingresa un email válido";
+          return 'Por favor, ingresa un email válido';
         }
         break;
-      case "subject":
-        if (!value) return "Este campo es obligatorio";
+      case 'subject':
+        if (!value) return 'Este campo es obligatorio';
         break;
-      case "message":
-        if (!value) return "Este campo es obligatorio";
-        if (typeof value === "string" && value.length < 10) {
-          return "El mensaje debe tener al menos 10 caracteres";
+      case 'message':
+        if (!value) return 'Este campo es obligatorio';
+        if (typeof value === 'string' && value.length < 10) {
+          return 'El mensaje debe tener al menos 10 caracteres';
         }
         break;
-      case "privacy":
-        if (!value) return "Debes aceptar la política de privacidad";
+      case 'privacy':
+        if (!value) return 'Debes aceptar la política de privacidad';
         break;
     }
-    return "";
+    return '';
   };
 
   const handleChange = (
@@ -68,7 +68,7 @@ export function ContactForm() {
   ) => {
     const { name, value, type } = e.target;
     const newValue =
-      type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
+      type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
 
     setFormData((prev) => ({ ...prev, [name]: newValue }));
 
@@ -83,7 +83,7 @@ export function ContactForm() {
   ) => {
     const { name, value, type } = e.target;
     const fieldValue =
-      type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
+      type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
     const error = validateField(name, fieldValue);
 
     if (error) {
@@ -107,24 +107,24 @@ export function ContactForm() {
     }
 
     setIsSubmitting(true);
-    setSubmitStatus("idle");
+    setSubmitStatus('idle');
 
     // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
-      setSubmitStatus("success");
+      setSubmitStatus('success');
 
       // Reset form after 2 seconds
       setTimeout(() => {
         setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          subject: "",
-          message: "",
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: '',
           privacy: false,
         });
-        setSubmitStatus("idle");
+        setSubmitStatus('idle');
       }, 2000);
     }, 2000);
   };
@@ -136,8 +136,7 @@ export function ContactForm() {
         <form
           id="contact-form"
           className="contact-form"
-          onSubmit={handleSubmit}
-        >
+          onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="name">Nombre completo *</label>
@@ -148,7 +147,7 @@ export function ContactForm() {
                 value={formData.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={errors.name ? "error" : ""}
+                className={errors.name ? 'error' : ''}
                 placeholder="Tu nombre completo"
               />
               {errors.name && (
@@ -165,7 +164,7 @@ export function ContactForm() {
                 value={formData.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={errors.email ? "error" : ""}
+                className={errors.email ? 'error' : ''}
                 placeholder="tu@email.com"
               />
               {errors.email && (
@@ -195,8 +194,7 @@ export function ContactForm() {
                 value={formData.subject}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={errors.subject ? "error" : ""}
-              >
+                className={errors.subject ? 'error' : ''}>
                 <option value="">Selecciona un asunto</option>
                 <option value="consulta">Consulta general</option>
                 <option value="soporte">Soporte técnico</option>
@@ -219,7 +217,7 @@ export function ContactForm() {
               value={formData.message}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={errors.message ? "error" : ""}
+              className={errors.message ? 'error' : ''}
               placeholder="Cuéntanos en qué podemos ayudarte..."
             />
             {errors.message && (
@@ -238,10 +236,10 @@ export function ContactForm() {
                 onBlur={handleBlur}
               />
               <span className="checkmark"></span>
-              Acepto la{" "}
+              Acepto la{' '}
               <a href="#" className="privacy-link">
                 política de privacidad
-              </a>{" "}
+              </a>{' '}
               y el tratamiento de mis datos personales.
             </label>
             {errors.privacy && (
@@ -252,22 +250,21 @@ export function ContactForm() {
           <button
             className="btn-enviar"
             type="submit"
-            disabled={isSubmitting || submitStatus === "success"}
-          >
+            disabled={isSubmitting || submitStatus === 'success'}>
             <span className="btn-text">
               {isSubmitting
-                ? "Enviando..."
-                : submitStatus === "success"
-                ? "¡Mensaje enviado!"
-                : "Enviar mensaje"}
+                ? 'Enviando...'
+                : submitStatus === 'success'
+                ? '¡Mensaje enviado!'
+                : 'Enviar mensaje'}
             </span>
             <span className="btn-icon">
               <span className="material-symbols-outlined">
                 {isSubmitting
-                  ? "hourglass_empty"
-                  : submitStatus === "success"
-                  ? "check"
-                  : "send"}
+                  ? 'hourglass_empty'
+                  : submitStatus === 'success'
+                  ? 'check'
+                  : ''}
               </span>
             </span>
           </button>
