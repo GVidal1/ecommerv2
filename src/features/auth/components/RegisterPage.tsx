@@ -1,16 +1,33 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { registerUserApi } from "../../../services/authService";
 import "../styles/auth.css";
 
 interface RegisterPageProps {
   onClose: () => void;
   onSwitchToLogin: () => void;
   onRegisterSuccess: (user: {
+    id: number;
     email: string;
     nombre: string;
     rol: "admin" | "user";
   }) => void;
 }
+
+// Función auxiliar para manejar el error 'unknown' de manera segura
+// Esto ayuda a extraer un mensaje de error legible desde cualquier cosa que se lance
+const getErrorMessage = (error: unknown): string => {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as { message: unknown }).message === "string"
+  ) {
+    // Asume que el error es un objeto con una propiedad 'message' de tipo string
+    return (error as { message: string }).message;
+  }
+  return "Error desconocido. Por favor, intente nuevamente.";
+};
 
 export const RegisterPage = ({
   onClose,
@@ -28,6 +45,8 @@ export const RegisterPage = ({
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // --- Funciones de Validación ---
 
   const validateNombre = (value: string) => {
     if (!value) {
@@ -56,13 +75,6 @@ export const RegisterPage = ({
       setEmailError("Ingrese un correo electrónico válido");
       return false;
     }
-
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    if (users.some((u: { email: string }) => u.email === value)) {
-      setEmailError("Este correo electrónico ya está registrado");
-      return false;
-    }
-
     setEmailError("");
     return true;
   };
@@ -99,9 +111,12 @@ export const RegisterPage = ({
     return true;
   };
 
+  // --- Función de Envío del Formulario ---
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 1. Validar todos los campos antes de enviar
     const isNombreValid = validateNombre(nombre);
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
@@ -120,41 +135,36 @@ export const RegisterPage = ({
     setMessage("");
 
     try {
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-      const newUser = {
-        email,
-        password,
+      // ✅ Llamada al backend
+      const response = await registerUserApi({
         nombre,
-        rol: "user" as const,
-      };
+        email: email.toLowerCase(),
+        password,
+        confirmPassword,
+      });
 
-      users.push(newUser);
-      localStorage.setItem("users", JSON.stringify(users));
-
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          email: newUser.email,
-          nombre: newUser.nombre,
-          rol: newUser.rol,
-        })
-      );
-
+      // 2. Éxito
       setMessage("¡Cuenta creada con éxito! Redirigiendo...");
       setMessageType("success");
 
       setTimeout(() => {
         onRegisterSuccess({
-          email: newUser.email,
-          nombre: newUser.nombre,
-          rol: newUser.rol,
+          id: response.id,
+          email: response.email,
+          nombre: response.nombre,
+          rol: response.rol,
         });
         onClose();
+        window.location.reload(); // Recargar para actualizar el estado global
       }, 1500);
-    } catch (err) {
-      console.error("Error al crear cuenta:", err);
-      setMessage("Error al crear la cuenta. Por favor, intente nuevamente.");
+    } catch (error: unknown) {
+      // 👈 Cambiado de 'any' a 'unknown'
+      // 3. Error: Usamos la función auxiliar para manejar 'unknown'
+      console.error("Error al crear cuenta:", error);
+
+      const errorMessage = getErrorMessage(error);
+
+      setMessage(errorMessage);
       setMessageType("error");
     } finally {
       setIsLoading(false);
@@ -175,6 +185,7 @@ export const RegisterPage = ({
         <p>Crea tu cuenta</p>
 
         <form id="registerForm" onSubmit={handleSubmit} noValidate>
+          {/* Campo Nombre completo */}
           <div className={`form-group ${nombreError ? "error" : ""}`}>
             <label htmlFor="nombre">Nombre completo</label>
             <input
@@ -183,6 +194,7 @@ export const RegisterPage = ({
               value={nombre}
               onChange={(e) => {
                 setNombre(e.target.value);
+                // Validar al escribir
                 validateNombre(e.target.value);
               }}
               placeholder="Ej: Juan Pérez"
@@ -201,6 +213,7 @@ export const RegisterPage = ({
             )}
           </div>
 
+          {/* Campo Correo electrónico */}
           <div className={`form-group ${emailError ? "error" : ""}`}>
             <label htmlFor="email">Correo electrónico</label>
             <input
@@ -227,6 +240,7 @@ export const RegisterPage = ({
             )}
           </div>
 
+          {/* Campo Contraseña */}
           <div className={`form-group ${passwordError ? "error" : ""}`}>
             <label htmlFor="password">Contraseña</label>
             <input
@@ -236,6 +250,7 @@ export const RegisterPage = ({
               onChange={(e) => {
                 setPassword(e.target.value);
                 validatePassword(e.target.value);
+                // Revalidar confirmación si ya tiene valor
                 if (confirmPassword) validateConfirmPassword(confirmPassword);
               }}
               placeholder="••••••••"
@@ -254,6 +269,7 @@ export const RegisterPage = ({
             )}
           </div>
 
+          {/* Campo Confirmar contraseña */}
           <div className={`form-group ${confirmPasswordError ? "error" : ""}`}>
             <label htmlFor="confirmPassword">Confirmar contraseña</label>
             <input
@@ -286,7 +302,7 @@ export const RegisterPage = ({
             disabled={isLoading}
             className={isLoading ? "loading" : ""}
           >
-            Crear cuenta
+            {isLoading ? "Creando cuenta..." : "Crear cuenta"}
           </button>
         </form>
 

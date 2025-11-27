@@ -1,17 +1,32 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import { initializeUsers } from "../utils/authUtils";
+import { loginUserApi } from "../../../services/authService";
 import "../styles/auth.css";
 
 interface LoginPageProps {
   onClose: () => void;
   onSwitchToRegister: () => void;
   onLoginSuccess: (user: {
+    id: number;
     email: string;
     nombre: string;
     rol: "admin" | "user";
   }) => void;
 }
+// Función auxiliar para manejar el error 'unknown' de manera segura
+// Devuelve el mensaje si existe, o un mensaje genérico.
+const getErrorMessage = (error: unknown, defaultMessage: string): string => {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as { message: unknown }).message === "string"
+  ) {
+    // Si el objeto tiene una propiedad 'message' de tipo string, la usamos.
+    return (error as { message: string }).message;
+  }
+  return defaultMessage;
+};
 
 export const LoginPage = ({
   onClose,
@@ -25,6 +40,8 @@ export const LoginPage = ({
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // --- Funciones de Validación ---
 
   const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,9 +70,12 @@ export const LoginPage = ({
     return true;
   };
 
+  // --- Función de Envío del Formulario ---
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 1. Validar campos
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
 
@@ -65,39 +85,35 @@ export const LoginPage = ({
     setMessage("");
 
     try {
-      const users = initializeUsers();
-      const user = users.find(
-        (u) => u.email === email && u.password === password
-      );
+      // ✅ Llamada al backend
+      const response = await loginUserApi({
+        email: email.toLowerCase(),
+        password,
+      });
 
-      if (user) {
-        setMessage("¡Bienvenido! Redirigiendo...");
-        setMessageType("success");
+      // 2. Éxito
+      setMessage("¡Bienvenido! Redirigiendo...");
+      setMessageType("success");
 
-        localStorage.setItem(
-          "currentUser",
-          JSON.stringify({
-            email: user.email,
-            nombre: user.nombre || user.email,
-            rol: user.rol || "user",
-          })
-        );
+      setTimeout(() => {
+        onLoginSuccess({
+          id: response.id,
+          email: response.email,
+          nombre: response.nombre,
+          rol: response.rol,
+        });
+        onClose();
+        window.location.reload(); // Recargar para actualizar el estado global
+      }, 800);
+    } catch (error: unknown) {
+      // 👈 Cambiado de 'any' a 'unknown'
+      // 3. Error: Usamos la función auxiliar para manejar 'unknown'
+      console.error("Error en login:", error);
 
-        setTimeout(() => {
-          onLoginSuccess({
-            email: user.email,
-            nombre: user.nombre || user.email,
-            rol: user.rol || "user",
-          });
-          onClose();
-        }, 800);
-      } else {
-        setMessage("Usuario o contraseña incorrectos");
-        setMessageType("error");
-      }
-    } catch (err) {
-      console.error("Error en login", err);
-      setMessage("Ocurrió un error. Intenta nuevamente");
+      const defaultErrorMsg = "Usuario o contraseña incorrectos";
+      const errorMessage = getErrorMessage(error, defaultErrorMsg);
+
+      setMessage(errorMessage);
       setMessageType("error");
     } finally {
       setIsLoading(false);
@@ -115,6 +131,7 @@ export const LoginPage = ({
         <p>Inicia sesión en tu cuenta</p>
 
         <form id="loginForm" onSubmit={handleSubmit} noValidate>
+          {/* Campo Correo electrónico */}
           <div className={`form-group ${emailError ? "error" : ""}`}>
             <label htmlFor="email">Correo electrónico</label>
             <input
@@ -141,6 +158,7 @@ export const LoginPage = ({
             )}
           </div>
 
+          {/* Campo Contraseña */}
           <div className={`form-group ${passwordError ? "error" : ""}`}>
             <label htmlFor="password">Contraseña</label>
             <input
@@ -173,7 +191,7 @@ export const LoginPage = ({
             disabled={isLoading}
             className={isLoading ? "loading" : ""}
           >
-            Iniciar sesión
+            {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
           </button>
         </form>
 

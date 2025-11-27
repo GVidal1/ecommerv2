@@ -1,5 +1,5 @@
 import { useAppContext } from "../../../hooks/useAppContext";
-import "./DashboardStyles.css";
+import "../styles/dashboard.css";
 
 export function Dashboard() {
   const { products, users } = useAppContext();

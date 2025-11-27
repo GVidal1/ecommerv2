@@ -12,10 +12,11 @@ export interface Product {
 }
 
 export interface User {
-  email: string;
-  password: string;
+  id: number;
   nombre: string;
-  rol: 'admin' | 'user';
+  email: string;
+  rol: "admin" | "user";
+  createdAt?: string;
 }
 
 export interface CartItem extends Product {

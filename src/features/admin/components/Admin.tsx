@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import "./AdminLayout.css";
+import "../styles/admin.css";
 
 // ========== CONTEXT ==========
 interface AdminLayoutContextType {
