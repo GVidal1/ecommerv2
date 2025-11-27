@@ -1,11 +1,31 @@
+import { useEffect, useState } from "react";
 import { useAppContext } from "../../../hooks/useAppContext";
+import { getAllUsersApi } from "../../../services/userService";
 import "../styles/dashboard.css";
 
 export function Dashboard() {
-  const { products, users } = useAppContext();
+  const { products } = useAppContext();
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+
+  useEffect(() => {
+    const loadUserCount = async () => {
+      try {
+        setIsLoadingUsers(true);
+        const usersFromApi = await getAllUsersApi();
+        setTotalUsers(usersFromApi.length);
+      } catch (error) {
+        console.error("Error al cargar el conteo de usuarios:", error);
+        setTotalUsers(0);
+      } finally {
+        setIsLoadingUsers(false);
+      }
+    };
+
+    void loadUserCount();
+  }, []);
 
   const totalProducts = products.length;
-  const totalUsers = users.length;
   const totalValue = products.reduce((sum, p) => sum + (p.price || 0), 0);
 
   return (
@@ -32,7 +52,11 @@ export function Dashboard() {
             </svg>
           </div>
           <div className="stat-info">
-            <span className="stat-value">{totalUsers}</span>
+            {isLoadingUsers ? (
+              <span className="stat-value">...</span>
+            ) : (
+              <span className="stat-value">{totalUsers}</span>
+            )}
             <span className="stat-label">Usuarios</span>
           </div>
         </div>
