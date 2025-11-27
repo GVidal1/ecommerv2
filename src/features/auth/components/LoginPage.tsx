@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { X } from "lucide-react";
-import { loginUserApi } from "../../../services/authService";
-import "../styles/auth.css";
+import { useState } from 'react';
+import { X, Eye, EyeOff } from 'lucide-react'; // Importamos los iconos del ojo
+import { loginUserApi } from '../../../services/authService';
+import '../styles/auth.css';
 
 interface LoginPageProps {
   onClose: () => void;
@@ -10,19 +10,18 @@ interface LoginPageProps {
     id: number;
     email: string;
     nombre: string;
-    rol: "admin" | "user";
+    rol: 'admin' | 'user';
   }) => void;
 }
+
 // Función auxiliar para manejar el error 'unknown' de manera segura
-// Devuelve el mensaje si existe, o un mensaje genérico.
 const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   if (
-    typeof error === "object" &&
+    typeof error === 'object' &&
     error !== null &&
-    "message" in error &&
-    typeof (error as { message: unknown }).message === "string"
+    'message' in error &&
+    typeof (error as { message: unknown }).message === 'string'
   ) {
-    // Si el objeto tiene una propiedad 'message' de tipo string, la usamos.
     return (error as { message: string }).message;
   }
   return defaultMessage;
@@ -33,12 +32,16 @@ export const LoginPage = ({
   onSwitchToRegister,
   onLoginSuccess,
 }: LoginPageProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // Estado para controlar la visibilidad de la contraseña
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   // --- Funciones de Validación ---
@@ -46,27 +49,27 @@ export const LoginPage = ({
   const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!value) {
-      setEmailError("El correo electrónico es requerido");
+      setEmailError('El correo electrónico es requerido');
       return false;
     }
     if (!emailRegex.test(value)) {
-      setEmailError("Ingrese un correo electrónico válido");
+      setEmailError('Ingrese un correo electrónico válido');
       return false;
     }
-    setEmailError("");
+    setEmailError('');
     return true;
   };
 
   const validatePassword = (value: string) => {
     if (!value) {
-      setPasswordError("La contraseña es requerida");
+      setPasswordError('La contraseña es requerida');
       return false;
     }
     if (value.length < 3) {
-      setPasswordError("La contraseña debe tener al menos 3 caracteres");
+      setPasswordError('La contraseña debe tener al menos 3 caracteres');
       return false;
     }
-    setPasswordError("");
+    setPasswordError('');
     return true;
   };
 
@@ -75,25 +78,22 @@ export const LoginPage = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. Validar campos
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
 
     if (!isEmailValid || !isPasswordValid) return;
 
     setIsLoading(true);
-    setMessage("");
+    setMessage('');
 
     try {
-      // ✅ Llamada al backend
       const response = await loginUserApi({
         email: email.toLowerCase(),
         password,
       });
 
-      // 2. Éxito
-      setMessage("¡Bienvenido! Redirigiendo...");
-      setMessageType("success");
+      setMessage('¡Bienvenido! Redirigiendo...');
+      setMessageType('success');
 
       setTimeout(() => {
         onLoginSuccess({
@@ -103,18 +103,14 @@ export const LoginPage = ({
           rol: response.rol,
         });
         onClose();
-        window.location.reload(); // Recargar para actualizar el estado global
+        window.location.reload();
       }, 800);
     } catch (error: unknown) {
-      // 👈 Cambiado de 'any' a 'unknown'
-      // 3. Error: Usamos la función auxiliar para manejar 'unknown'
-      console.error("Error en login:", error);
-
-      const defaultErrorMsg = "Usuario o contraseña incorrectos";
+      console.error('Error en login:', error);
+      const defaultErrorMsg = 'Usuario o contraseña incorrectos';
       const errorMessage = getErrorMessage(error, defaultErrorMsg);
-
       setMessage(errorMessage);
-      setMessageType("error");
+      setMessageType('error');
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +128,7 @@ export const LoginPage = ({
 
         <form id="loginForm" onSubmit={handleSubmit} noValidate>
           {/* Campo Correo electrónico */}
-          <div className={`form-group ${emailError ? "error" : ""}`}>
+          <div className={`form-group ${emailError ? 'error' : ''}`}>
             <label htmlFor="email">Correo electrónico</label>
             <input
               type="email"
@@ -158,20 +154,48 @@ export const LoginPage = ({
             )}
           </div>
 
-          {/* Campo Contraseña */}
-          <div className={`form-group ${passwordError ? "error" : ""}`}>
+          {/* Campo Contraseña con OJO para ver/ocultar */}
+          <div className={`form-group ${passwordError ? 'error' : ''}`}>
             <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                validatePassword(e.target.value);
-              }}
-              placeholder="••••••••"
-              autoComplete="current-password"
-            />
+
+            {/* Contenedor relativo para posicionar el icono */}
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'} // Cambia el tipo dinámicamente
+                id="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  validatePassword(e.target.value);
+                }}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                style={{ paddingRight: '40px' }} // Espacio para que el texto no choque con el icono
+              />
+
+              {/* Botón del ojo */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#666',
+                }}
+                tabIndex={-1} // Evita que se seleccione con tabulación antes que el submit
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
             {passwordError && (
               <div className="error-message">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -189,9 +213,8 @@ export const LoginPage = ({
             type="submit"
             id="submitBtn"
             disabled={isLoading}
-            className={isLoading ? "loading" : ""}
-          >
-            {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
+            className={isLoading ? 'loading' : ''}>
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
         </form>
 
@@ -203,14 +226,13 @@ export const LoginPage = ({
 
         <div className="register-link">
           <p>
-            ¿No tienes cuenta?{" "}
+            ¿No tienes cuenta?{' '}
             <a
               href="#"
               onClick={(e) => {
                 e.preventDefault();
                 onSwitchToRegister();
-              }}
-            >
+              }}>
               Regístrate aquí
             </a>
           </p>
