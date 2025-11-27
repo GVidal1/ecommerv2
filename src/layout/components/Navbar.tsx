@@ -14,19 +14,19 @@ export const Navbar = ({ isMobileMenuOpen, closeMobileMenu }: NavbarProps) => {
   return (
     <nav className={`navbar ${isMobileMenuOpen ? 'show' : ''}`}>
       <NavLink to="/" style={getNavLinkStyle} onClick={closeMobileMenu}>
-        Home
+        Inicio
       </NavLink>
       <NavLink to="/products" style={getNavLinkStyle} onClick={closeMobileMenu}>
-        Products
+        Productos
       </NavLink>
       <NavLink to="/about" style={getNavLinkStyle} onClick={closeMobileMenu}>
-        About
+        Nosotros
       </NavLink>
       <NavLink to="/blog" style={getNavLinkStyle} onClick={closeMobileMenu}>
         Blog
       </NavLink>
       <NavLink to="/contact" style={getNavLinkStyle} onClick={closeMobileMenu}>
-        Contact
+        Contacto
       </NavLink>
     </nav>
   );
