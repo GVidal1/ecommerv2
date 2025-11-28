@@ -1,24 +1,24 @@
-import { createContext, useState, useEffect } from "react";
-import { getProductsFromApi } from "../services/api";
+import { createContext, useState, useEffect } from 'react';
+import { getProductsFromApi } from '../services/api';
 import {
   getCartFromApi,
   addItemToCartApi,
   removeItemFromCartApi,
   updateCartQuantityApi,
   clearCartApi,
-} from "../services/cartService";
-import { logoutUser as logoutAuthService } from "../services/authService"; // Import del servicio real
+} from '../services/cartService';
+import { logoutUser as logoutAuthService } from '../services/authService'; // Import del servicio real
 
-import type { ReactNode } from "react";
-import type { Product, User, CartItem } from "../types";
+import type { ReactNode } from 'react';
+import type { Product, User, CartItem } from '../types';
 
 // Función auxiliar para manejar errores de la API de forma segura
 const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   if (
-    typeof error === "object" &&
+    typeof error === 'object' &&
     error !== null &&
-    "message" in error &&
-    typeof (error as { message: unknown }).message === "string"
+    'message' in error &&
+    typeof (error as { message: unknown }).message === 'string'
   ) {
     return (error as { message: string }).message;
   }
@@ -27,7 +27,7 @@ const getErrorMessage = (error: unknown, defaultMessage: string): string => {
 
 interface AppContextType {
   products: Product[];
-  users: User[]; // Mantenemos el estado, aunque ya no se carga desde localStorage
+  users: User[];
   currentUser: User | null;
   cart: CartItem[];
   isLoading: boolean;
@@ -37,11 +37,6 @@ interface AppContextType {
   removeProductById: (productId: number) => void;
   updateProductById: (productId: number, updates: Partial<Product>) => void;
   generateNewProductId: () => number;
-  // Acciones de Autenticación/Usuarios
-  loginUser: (email: string, password: string) => boolean; // DEPRECADO
-  logoutUser: () => void;
-  addUser: (user: User) => boolean; //  DEPRECADO
-  removeUserByEmail: (email: string) => void; // DEPRECADO
   // Acciones del Carrito
   addProductToCart: (product: Product, quantity?: number) => void;
   removeProductFromCart: (productId: number) => void;
@@ -55,7 +50,7 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [users] = useState<User[]>([]); // Mantenido para compatibilidad, pero no se usa
+  const [users] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,20 +64,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const apiProducts = await getProductsFromApi();
         setProducts(apiProducts);
 
-        // Cargar usuario actual si existe en localStorage
-        const storedCurrentUser = localStorage.getItem("currentUser");
+        const storedCurrentUser = localStorage.getItem('currentUser');
         if (storedCurrentUser) {
           const user = JSON.parse(storedCurrentUser);
           setCurrentUser(user);
-          // Llamamos a fetchUserCart solo si hay un usuario logueado
           fetchUserCart(user.email);
         }
 
         setError(null);
       } catch (err: unknown) {
-        // Corregido: error como unknown
         console.error(err);
-        setError("No se pudieron cargar los datos iniciales.");
+        setError('No se pudieron cargar los datos iniciales.');
       } finally {
         setIsLoading(false);
       }
@@ -90,14 +82,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     loadInitialData();
   }, []);
 
-  // para traer el carrito actualizado
   const fetchUserCart = async (email: string) => {
     try {
       const items = await getCartFromApi(email);
       setCart(items);
     } catch (e: unknown) {
-      // Corregido: error como unknown
-      console.error("Error cargando carrito", e);
+      console.error('Error cargando carrito', e);
     }
   };
 
@@ -105,48 +95,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setProducts(newProducts);
   };
 
-  // DEPRECADO - Ya no persistimos users en localStorage
-  // Esta función es redundante ya que el estado 'users' no se usa localmente
-  // y no se persiste. Se elimina para corregir el warning de ESLint.
-  // const persistUsers = (newUsers: User[]) => {
-  //   setUsers(newUsers);
-  // };
-
-  // DEPRECADO - Este método ya no se usa
-  // El login real está en LoginPage.tsx → loginUserApi()
-  // Se marcan los parámetros como unused usando '_' para eliminar el warning de ESLint.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const loginUser = (_email: string, _password: string): boolean => {
-    console.warn(
-      "loginUser() está deprecado. Usa loginUserApi() de authService"
-    );
-    return false;
-  };
-
-  // ACTUALIZADO - Usa el servicio real de autenticación
   const logoutUser = () => {
     setCurrentUser(null);
     setCart([]);
-    logoutAuthService(); // Llama al servicio que limpia token y currentUser
-  };
-
-  // DEPRECADO - Registro de usuarios
-  // Se marca el parámetro como unused usando '_' para eliminar el warning de ESLint.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const addUser = (_user: User): boolean => {
-    console.warn(
-      "addUser() está deprecado. Usa registerUserApi() de authService"
-    );
-    return false;
-  };
-
-  // DEPRECADO
-  // Se marca el parámetro como unused usando '_' para eliminar el warning de ESLint.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const removeUserByEmail = (_email: string) => {
-    console.warn(
-      "removeUserByEmail() está deprecado. Ya no se usa localStorage para usuarios"
-    );
+    logoutAuthService();
   };
 
   //PRODUCTOS
@@ -189,7 +141,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const generateNewProductId = (): number => {
     const currentMax = products.reduce(
       (maxId, product) =>
-        typeof product.id === "number" ? Math.max(maxId, product.id) : maxId,
+        typeof product.id === 'number' ? Math.max(maxId, product.id) : maxId,
       0
     );
     return currentMax + 1;
@@ -199,11 +151,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addProductToCart = async (product: Product, quantity = 1) => {
     if (!currentUser) {
-      alert("Debes iniciar sesión para agregar al carrito");
+      alert('Debes iniciar sesión para agregar al carrito');
       return;
     }
     try {
-      // actualizamos el estado con la respuesta
       const updatedItems = await addItemToCartApi(
         currentUser.email,
         product.id,
@@ -211,9 +162,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       );
       setCart(updatedItems);
     } catch (error: unknown) {
-      // 👈 Corregido: error como unknown
-      console.error("Error agregando al carrito", error);
-      alert(getErrorMessage(error, "Error al agregar el producto al carrito."));
+      console.error('Error agregando al carrito', error);
+      alert(getErrorMessage(error, 'Error al agregar el producto al carrito.'));
     }
   };
 
@@ -226,10 +176,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       );
       setCart(updatedItems);
     } catch (error: unknown) {
-      //  Corregido: error como unknown
-      console.error("Error eliminando del carrito", error);
+      console.error('Error eliminando del carrito', error);
       alert(
-        getErrorMessage(error, "Error al eliminar el producto del carrito.")
+        getErrorMessage(error, 'Error al eliminar el producto del carrito.')
       );
     }
   };
@@ -248,10 +197,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       );
       setCart(updatedItems);
     } catch (error: unknown) {
-      // 👈 Corregido: error como unknown
-      console.error("Error actualizando cantidad", error);
+      console.error('Error actualizando cantidad', error);
       alert(
-        getErrorMessage(error, "Error al actualizar la cantidad del carrito.")
+        getErrorMessage(error, 'Error al actualizar la cantidad del carrito.')
       );
     }
   };
@@ -262,9 +210,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       await clearCartApi(currentUser.email);
       setCart([]);
     } catch (error: unknown) {
-      // Corregido: error como unknown
-      console.error("Error vaciando carrito", error);
-      alert(getErrorMessage(error, "Error al vaciar el carrito."));
+      console.error('Error vaciando carrito', error);
+      alert(getErrorMessage(error, 'Error al vaciar el carrito.'));
     }
   };
 
@@ -294,10 +241,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     removeProductById,
     updateProductById,
     generateNewProductId,
-    loginUser,
     logoutUser,
-    addUser,
-    removeUserByEmail,
     addProductToCart,
     removeProductFromCart,
     updateCartQuantity,
