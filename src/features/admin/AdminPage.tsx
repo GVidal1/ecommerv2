@@ -14,13 +14,12 @@ import {
   deleteUserApi,
   getAllUsersDetailedApi,
   type UserDetailDto,
-  UnauthorizedError,
 } from '../../services/userService';
 import {
   createProductApi,
   updateProductApi,
   deleteProductApi,
-} from '../../services/api'; // Asegúrate de importar esto
+} from '../../services/api';
 import { logoutUser, getAuthToken } from '../../services/authService';
 import {
   getCurrentUser,
@@ -28,7 +27,7 @@ import {
   type CurrentUser,
 } from '../auth/utils/authUtils';
 import { useAppContext } from '../../hooks/useAppContext';
-import listOfCategories from '../../constants/listOfCategories'; // Asegúrate de importar esto
+import listOfCategories from '../../constants/listOfCategories';
 
 // Componentes
 import { AdminLayout } from './components/Admin';
