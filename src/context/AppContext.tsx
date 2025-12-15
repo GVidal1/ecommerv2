@@ -7,12 +7,11 @@ import {
   updateCartQuantityApi,
   clearCartApi,
 } from '../services/cartService';
-import { logoutUser as logoutAuthService } from '../services/authService'; // Import del servicio real
+import { logoutUser as logoutAuthService } from '../services/authService';
 
 import type { ReactNode } from 'react';
 import type { Product, User, CartItem } from '../types';
 
-// Función auxiliar para manejar errores de la API de forma segura
 const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   if (
     typeof error === 'object' &&
@@ -122,7 +121,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCart((prevCart) =>
       prevCart.map((item) => {
         if (item.productId === productId) {
-          // Aseguramos que el carrito se actualice si el producto cambia (ej: precio)
           const productUpdate = newProducts.find((p) => p.id === productId);
           return {
             ...item,
