@@ -84,7 +84,6 @@ export async function getAllUsersDetailedApi(): Promise<UserDetailDto[]> {
       throw new UnauthorizedError('Token vacío');
     }
 
-    console.log('🔍 DEBUG getAllUsersDetailedApi:');
     console.log('  - Token existe:', !!token);
     console.log('  - Longitud del token:', token.length);
     console.log(
