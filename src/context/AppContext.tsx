@@ -1,23 +1,24 @@
-import { createContext, useState, useEffect } from 'react';
-import { getProductsFromApi } from '../services/api';
+import { createContext, useState, useEffect } from "react";
+import { getProductsFromApi } from "../services/api";
 import {
   getCartFromApi,
   addItemToCartApi,
   removeItemFromCartApi,
   updateCartQuantityApi,
   clearCartApi,
-} from '../services/cartService';
-import { logoutUser as logoutAuthService } from '../services/authService';
+} from "../services/cartService";
+import { logoutUser as logoutAuthService } from "../services/authService"; // Import del servicio real
 
-import type { ReactNode } from 'react';
-import type { Product, User, CartItem } from '../types';
+import type { ReactNode } from "react";
+import type { Product, User, CartItem } from "../types";
 
+// Función auxiliar para manejar errores de la API de forma segura
 const getErrorMessage = (error: unknown, defaultMessage: string): string => {
   if (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'message' in error &&
-    typeof (error as { message: unknown }).message === 'string'
+    "message" in error &&
+    typeof (error as { message: unknown }).message === "string"
   ) {
     return (error as { message: string }).message;
   }
@@ -63,7 +64,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const apiProducts = await getProductsFromApi();
         setProducts(apiProducts);
 
-        const storedCurrentUser = localStorage.getItem('currentUser');
+        const storedCurrentUser = localStorage.getItem("currentUser");
         if (storedCurrentUser) {
           const user = JSON.parse(storedCurrentUser);
           setCurrentUser(user);
@@ -73,7 +74,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setError(null);
       } catch (err: unknown) {
         console.error(err);
-        setError('No se pudieron cargar los datos iniciales.');
+        setError("No se pudieron cargar los datos iniciales.");
       } finally {
         setIsLoading(false);
       }
@@ -86,7 +87,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       const items = await getCartFromApi(email);
       setCart(items);
     } catch (e: unknown) {
-      console.error('Error cargando carrito', e);
+      console.error("Error cargando carrito", e);
     }
   };
 
@@ -121,6 +122,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCart((prevCart) =>
       prevCart.map((item) => {
         if (item.productId === productId) {
+          // Aseguramos que el carrito se actualice si el producto cambia (ej: precio)
           const productUpdate = newProducts.find((p) => p.id === productId);
           return {
             ...item,
@@ -139,7 +141,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const generateNewProductId = (): number => {
     const currentMax = products.reduce(
       (maxId, product) =>
-        typeof product.id === 'number' ? Math.max(maxId, product.id) : maxId,
+        typeof product.id === "number" ? Math.max(maxId, product.id) : maxId,
       0
     );
     return currentMax + 1;
@@ -149,7 +151,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addProductToCart = async (product: Product, quantity = 1) => {
     if (!currentUser) {
-      alert('Debes iniciar sesión para agregar al carrito');
+      alert("Debes iniciar sesión para agregar al carrito");
       return;
     }
     try {
@@ -160,8 +162,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       );
       setCart(updatedItems);
     } catch (error: unknown) {
-      console.error('Error agregando al carrito', error);
-      alert(getErrorMessage(error, 'Error al agregar el producto al carrito.'));
+      console.error("Error agregando al carrito", error);
+      alert(getErrorMessage(error, "Error al agregar el producto al carrito."));
     }
   };
 
@@ -174,9 +176,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       );
       setCart(updatedItems);
     } catch (error: unknown) {
-      console.error('Error eliminando del carrito', error);
+      console.error("Error eliminando del carrito", error);
       alert(
-        getErrorMessage(error, 'Error al eliminar el producto del carrito.')
+        getErrorMessage(error, "Error al eliminar el producto del carrito.")
       );
     }
   };
@@ -195,9 +197,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       );
       setCart(updatedItems);
     } catch (error: unknown) {
-      console.error('Error actualizando cantidad', error);
+      console.error("Error actualizando cantidad", error);
       alert(
-        getErrorMessage(error, 'Error al actualizar la cantidad del carrito.')
+        getErrorMessage(error, "Error al actualizar la cantidad del carrito.")
       );
     }
   };
@@ -208,8 +210,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       await clearCartApi(currentUser.email);
       setCart([]);
     } catch (error: unknown) {
-      console.error('Error vaciando carrito', error);
-      alert(getErrorMessage(error, 'Error al vaciar el carrito.'));
+      console.error("Error vaciando carrito", error);
+      alert(getErrorMessage(error, "Error al vaciar el carrito."));
     }
   };
 
